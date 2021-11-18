@@ -1,0 +1,15 @@
+{
+  "type": "mods:lightning",
+  "weather": "clear",
+  "ingredients": [
+    {
+      "item": "minecraft:glass_pane"
+    },
+    {
+      "item": "mods:raw_titanium"
+    }
+  ],
+  "output": {
+    "item": "mods:basic_key"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model":  "mods:block/lightning_channeler" }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "item.mods.titanium_ingot": "Titanium Ingot",
+  "item.mods.titanium_nugget": "Titanium Nugget",
+  "item.mods.raw_titanium": "Raw Titanium",
+  "item.mods.red_key": "Red Key",
+  "item.mods.dark_key": "Dark Key",
+  "item.mods.basic_key": "Basic Key",
+  "item.mods.stone_key": "Stone Key",
+  "item.mods.water_key": "Water Key",
+  "item.mods.golden_key": "Golden Key",
+  "curios.identifier.key": "Key",
+  "block.mods.titanium_block": "Titanium Block",
+  "block.mods.titanium_ore": "Titanium Ore",
+  "itemGroup.modsTabs": "Mods Tabs",
+  "block.mods.lightning_channeler": "Lightning Channeler",
+  "screen.mods.lightning_channeler": "Lightning Channeler",
+  "block.mods.crafting_table": "Crafting Table",
+  "screen.mods.crafting_table": "Crafting Table"
+}
