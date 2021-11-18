@@ -15,6 +15,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -27,9 +28,12 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.wrapper.RecipeWrapper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class LightningChannelerTile extends BlockEntity implements Tickable  {
@@ -98,14 +102,14 @@ public class LightningChannelerTile extends BlockEntity implements Tickable  {
     }
 
     public void craft() {
-        Inventory inv = new Inventory(Minecraft.getInstance().player);
+        RecipeWrapper recipeWrapper = new RecipeWrapper(new ItemStackHandler(2));
         for (int i = 0; i < itemHandler.getSlots(); i++) {
-            inv.add(i, itemHandler.getStackInSlot(i));
+            recipeWrapper.setItem(i, itemHandler.getStackInSlot(i));
         }
 
         Optional<LightningChannelerRecipe> recipe = level.getRecipeManager()
-                .getRecipeFor(ModRecipeType.LIGHTNING_RECIPE, inv, level);
-
+                .getRecipeFor(ModRecipeType.LIGHTNING_RECIPE, recipeWrapper, level);
+        System.err.println(recipe.isPresent());
         recipe.ifPresent(iRecipe -> {
             ItemStack output = iRecipe.getResultItem();
 
@@ -137,9 +141,9 @@ public class LightningChannelerTile extends BlockEntity implements Tickable  {
 
     @Override
     public void tick() {
-        if(level.isClientSide)
+        if(level.isClientSide) {
             return;
-
+        }
         craft();
     }
 }

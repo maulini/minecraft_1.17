@@ -3,11 +3,11 @@ package net.dofmine.minedofmod.data.recipes;
 import net.dofmine.minedofmod.MinedofMod;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraftforge.common.crafting.IShapedRecipe;
+import net.minecraftforge.items.wrapper.RecipeWrapper;
 
-public interface ILightningChannelerRecipe extends IShapedRecipe<Inventory> {
+public interface ILightningChannelerRecipe extends Recipe<RecipeWrapper> {
 
     ResourceLocation TYPE_ID = new ResourceLocation(MinedofMod.MODS_ID, "lightning");
 

@@ -7,12 +7,14 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.items.wrapper.RecipeWrapper;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
@@ -43,19 +45,9 @@ public class LightningChannelerRecipe implements ILightningChannelerRecipe {
     }
 
     @Override
-    public int getRecipeWidth() {
-        return 0;
-    }
-
-    @Override
-    public int getRecipeHeight() {
-        return 0;
-    }
-
-    @Override
-    public boolean matches(Inventory inventory, Level level) {
-        if (recipeItem.get(0).test(inventory.getItem(0))) {
-            return recipeItem.get(1).test(inventory.getItem(1));
+    public boolean matches(RecipeWrapper recipeWrapper, Level level) {
+        if (recipeItem.get(0).test(recipeWrapper.getItem(0))) {
+            return recipeItem.get(1).test(recipeWrapper.getItem(1));
         }
         return false;
     }
@@ -66,7 +58,7 @@ public class LightningChannelerRecipe implements ILightningChannelerRecipe {
     }
 
     @Override
-    public ItemStack assemble(Inventory inventory) {
+    public ItemStack assemble(RecipeWrapper recipeWrapper) {
         return output;
     }
 
