@@ -1,4 +1,4 @@
-package net.dofmine.minedofmod.data.recipes;
+package net.dofmine.minedofmod.data.recipes.lightning;
 
 import net.dofmine.minedofmod.MinedofMod;
 import net.minecraft.core.Registry;

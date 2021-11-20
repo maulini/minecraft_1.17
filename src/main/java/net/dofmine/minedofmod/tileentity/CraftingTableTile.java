@@ -1,5 +1,8 @@
 package net.dofmine.minedofmod.tileentity;
 
+import net.dofmine.minedofmod.data.recipes.ModRecipeType;
+import net.dofmine.minedofmod.data.recipes.crafting.CraftingRecipe;
+import net.dofmine.minedofmod.data.recipes.lightning.LightningChannelerRecipe;
 import net.dofmine.minedofmod.items.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -15,14 +18,18 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.wrapper.RecipeWrapper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 public class CraftingTableTile extends BlockEntity {
 
     private final ItemStackHandler itemHandler = createHandler();
     private final LazyOptional<IItemHandler> handler = LazyOptional.of(() -> itemHandler);
+    private boolean isCraft;
+    private boolean deleteOutPut;
 
     public CraftingTableTile(BlockEntityType<?> p_155228_, BlockPos p_155229_, BlockState p_155230_) {
         super(p_155228_, p_155229_, p_155230_);
@@ -53,17 +60,12 @@ public class CraftingTableTile extends BlockEntity {
 
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-                switch (slot) {
-                    case 0: return stack.getItem() == Items.GLASS_PANE;
-                    case 1: return stack.getItem() == ModItems.TITANUIM_INGOT.get() || stack.getItem() == ModItems.TITANUIM_NUGGET.get();
-
-                    default: return false;
-                }
+                return true;
             }
 
             @Override
             public int getSlotLimit(int slot) {
-                return 1;
+                return 64;
             }
 
             @Nonnull
@@ -87,15 +89,43 @@ public class CraftingTableTile extends BlockEntity {
         return super.getCapability(cap, side);
     }
 
-    public void lightningHasStruck() {
-        boolean hasFocusInFirstSlot = this.itemHandler.getStackInSlot(0).getCount() > 0 && itemHandler.getStackInSlot(0).getItem() == Items.GLASS_PANE;
-        boolean hasTitaniumInSecondSlot = itemHandler.getStackInSlot(1).getCount() > 0 && itemHandler.getStackInSlot(1).getItem() == ModItems.TITANUIM_INGOT.get();
+    public void craft() {
+        RecipeWrapper recipeWrapper = new RecipeWrapper(new ItemStackHandler(17));
+        for (int i = 0; i < itemHandler.getSlots(); i++) {
+            recipeWrapper.setItem(i, itemHandler.getStackInSlot(i));
+        }
 
-        if (hasFocusInFirstSlot && hasTitaniumInSecondSlot) {
-            itemHandler.getStackInSlot(0).shrink(1);
-            itemHandler.getStackInSlot(1).shrink(1);
+        Optional<CraftingRecipe> recipe = level.getRecipeManager()
+                .getRecipeFor(ModRecipeType.CRAFTING_RECIPE, recipeWrapper, level);
+        recipe.ifPresentOrElse(iRecipe -> {
+            ItemStack output = iRecipe.getResultItem();
+            if (!isCraft)
+            craftTheItem(output);
+            setChanged();
+        }, this::deleteOutPut);
 
-            itemHandler.insertItem(1, new ItemStack(ModItems.TITANUIM_NUGGET.get()), false);
+        if (itemHandler.getStackInSlot(16).getItem().equals(Items.AIR) && isCraft && !deleteOutPut) {
+            deleteIngredient();
+            isCraft = false;
         }
     }
+
+    private void craftTheItem(ItemStack output) {
+        isCraft = true;
+        deleteOutPut = false;
+        itemHandler.insertItem(16, output, false);
+    }
+
+    private void deleteOutPut() {
+        deleteOutPut = true;
+        isCraft = false;
+        itemHandler.extractItem(16, 1, false);
+    }
+
+    private void deleteIngredient() {
+        for (int i = 0; i < 16; i++) {
+            itemHandler.extractItem(i, 64, false);
+        }
+    }
+
 }

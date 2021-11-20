@@ -1,27 +1,16 @@
 package net.dofmine.minedofmod.tileentity;
 
-import net.dofmine.minedofmod.data.recipes.LightningChannelerRecipe;
+import net.dofmine.minedofmod.data.recipes.lightning.LightningChannelerRecipe;
 import net.dofmine.minedofmod.data.recipes.ModRecipeType;
-import net.dofmine.minedofmod.items.ModItems;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.Tickable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.FurnaceBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -32,8 +21,6 @@ import net.minecraftforge.items.wrapper.RecipeWrapper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public class LightningChannelerTile extends BlockEntity implements Tickable  {
@@ -109,17 +96,19 @@ public class LightningChannelerTile extends BlockEntity implements Tickable  {
 
         Optional<LightningChannelerRecipe> recipe = level.getRecipeManager()
                 .getRecipeFor(ModRecipeType.LIGHTNING_RECIPE, recipeWrapper, level);
-        System.err.println(recipe.isPresent());
+
         recipe.ifPresent(iRecipe -> {
             ItemStack output = iRecipe.getResultItem();
 
             if(iRecipe.getWeather().equals(LightningChannelerRecipe.Weather.CLEAR) &&
                     !level.isRaining()) {
+                strikeLightning();
                 craftTheItem(output);
             }
 
             if(iRecipe.getWeather().equals(LightningChannelerRecipe.Weather.RAIN) &&
                     level.isRaining()) {
+                strikeLightning();
                 craftTheItem(output);
             }
 

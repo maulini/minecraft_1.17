@@ -2,6 +2,7 @@ package net.dofmine.minedofmod.block.custom;
 
 import net.dofmine.minedofmod.container.CraftingTableContainer;
 import net.dofmine.minedofmod.tileentity.CraftingTableTile;
+import net.dofmine.minedofmod.tileentity.LightningChannelerTile;
 import net.dofmine.minedofmod.tileentity.ModTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -21,6 +22,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -28,6 +31,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.fmllegacy.network.NetworkHooks;
 
 import javax.annotation.Nullable;
+import java.util.Random;
 
 public class CraftingTableBlock extends BaseEntityBlock {
 
@@ -38,7 +42,6 @@ public class CraftingTableBlock extends BaseEntityBlock {
     public InteractionResult use(BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (!level.isClientSide) {
             BlockEntity entity = level.getBlockEntity(blockPos);
-            System.err.println(entity);
             if (entity instanceof CraftingTableTile) {
                 MenuProvider menuProvider = createMenuProvider(blockPos);
                 NetworkHooks.openGui(((ServerPlayer) player), menuProvider, entity.getBlockPos());
@@ -73,5 +76,18 @@ public class CraftingTableBlock extends BaseEntityBlock {
     @Override
     public RenderShape getRenderShape(BlockState p_49232_) {
         return RenderShape.MODEL;
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
+        if (level.isClientSide()) {
+            return null;
+        }
+        return (level1, blockPos, blockState, t) -> {
+            if (t instanceof CraftingTableTile tile) {
+                tile.craft();
+            }
+        };
     }
 }
