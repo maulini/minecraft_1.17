@@ -32,4 +32,9 @@ public class CraftingTableScreen extends AbstractContainerScreen<CraftingTableCo
         int j = this.getGuiTop();
         blit(p_97787_, i, j, 0, 0, getXSize(), getYSize());
     }
+
+    @Override
+    public boolean isPauseScreen() {
+        return false;
+    }
 }

@@ -1,8 +1,11 @@
 package net.dofmine.minedofmod.container;
 
 import net.dofmine.minedofmod.MinedofMod;
+import net.dofmine.minedofmod.tileentity.BackPackEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -26,6 +29,14 @@ public class ModContainer {
             BlockPos pos = data.readBlockPos();
             Level level = inv.player.level;
             return new CraftingTableContainer(windowId, level, pos, inv.player, inv);
+        })));
+
+    public static final RegistryObject<MenuType<BackPackContainer>> BACK_PACK_CONTAINER = CONTAINERS.register("back_pack", () ->
+        IForgeContainerType.create(((windowId, inv, data) -> {
+            Player player = inv.player;
+            ItemStack itemStack = player.getMainHandItem();
+            itemStack.setEntityRepresentation(new BackPackEntity(player.level));
+            return new BackPackContainer(windowId, player, itemStack, inv);
         })));
 
     public static void register(IEventBus eventBus) {

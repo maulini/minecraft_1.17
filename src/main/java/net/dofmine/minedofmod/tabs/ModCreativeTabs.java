@@ -9,7 +9,14 @@ public class ModCreativeTabs {
     public static final CreativeModeTab MODS_TABS = new CreativeModeTab("modsTabs") {
         @Override
         public ItemStack makeIcon() {
-            return new ItemStack(ModItems.TITANUIM_INGOT.get());
+            return new ItemStack(ModItems.TITANIUM_INGOT.get());
+        }
+    };
+
+    public static final CreativeModeTab TOOLS_TABS = new CreativeModeTab("toolsTabs") {
+        @Override
+        public ItemStack makeIcon() {
+            return new ItemStack(ModItems.TITANIUM_SWORD.get());
         }
     };
 

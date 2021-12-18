@@ -3,6 +3,7 @@ package net.dofmine.minedofmod.items.key;
 import com.google.common.collect.ImmutableMap;
 import com.ibm.icu.impl.locale.XCldrStub;
 import net.dofmine.minedofmod.items.ModItems;
+import net.dofmine.minedofmod.job.ExtendedEntityPlayer;
 import net.dofmine.minedofmod.tabs.ModCreativeTabs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
@@ -44,8 +45,9 @@ public class KeyItem extends Item implements ICurioItem {
             Level level = pContext.getLevel();
             BlockPos blockPos = pContext.getClickedPos();
             Block blockClicked = level.getBlockState(blockPos).getBlock();
+
             if (!blockClicked.equals(changeBlock)) {
-                level.setBlock(blockPos, changeBlock.defaultBlockState(), 512);
+                level.setBlockAndUpdate(blockPos, changeBlock.defaultBlockState());
             }
         }
         return InteractionResult.SUCCESS;

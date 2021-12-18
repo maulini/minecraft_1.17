@@ -30,7 +30,7 @@ public class CraftingTableContainer extends AbstractContainerMenu {
         this.blockEntity = level.getBlockEntity(blockPos);
         this.player = player;
         this.playerInventory = new InvWrapper(playerInventory);
-        layoutPlayerInventorySlots(8, 84);
+        layoutPlayerInventorySlots(7, 86);
 
         if (blockEntity != null) {
             blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(h -> {
