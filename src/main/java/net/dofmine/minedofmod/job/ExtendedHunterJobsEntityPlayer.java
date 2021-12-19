@@ -85,6 +85,7 @@ public class ExtendedHunterJobsEntityPlayer implements ICapabilitySerializable {
 
         properties.put("xp", LongTag.valueOf(this.xp));
         properties.put("level", IntTag.valueOf(this.level));
+        properties.put("maxXp", LongTag.valueOf(this.maxXp));
         ClientSetup.storeEntityData(player.getDisplayName().getString(), properties);
         return properties;
     }
@@ -94,6 +95,7 @@ public class ExtendedHunterJobsEntityPlayer implements ICapabilitySerializable {
         CompoundTag properties = (CompoundTag) nbt;
         this.xp = properties.getLong("xp");
         this.level = properties.getInt("level");
+        this.maxXp = properties.getLong("maxXp");
     }
 
     public void addXp(long amount) {
@@ -111,7 +113,7 @@ public class ExtendedHunterJobsEntityPlayer implements ICapabilitySerializable {
     }
 
     public void sync() {
-        PacketHunterJobs packetJobs = new PacketHunterJobs(this.xp, this.level);
+        PacketHunterJobs packetJobs = new PacketHunterJobs(this.xp, this.level, this.maxXp);
         Networking.sendToServer(packetJobs);
 
         if (player.level.isClientSide) {

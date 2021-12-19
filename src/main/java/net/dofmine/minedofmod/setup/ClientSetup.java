@@ -521,42 +521,27 @@ public class ClientSetup {
 
     @SubscribeEvent
     public void onStartBlockDestroy(PlayerInteractEvent.LeftClickBlock event) {
-        Block block = event.getPlayer().level.getBlockState(event.getPos()).getBlock();
-        ExtendedMinerJobsEntityPlayer minerJob = ExtendedMinerJobsEntityPlayer.get();
-        if (block.equals(ModBlocks.RUBY_ORE.get()) && minerJob.level < 10) {
-            event.setCanceled(true);
-            event.getPlayer().sendMessage(new TextComponent("Impossible to break this block, miner level must be 10 but your are level " + minerJob.level), UUID.randomUUID());
-        } else if (block.equals(ModBlocks.LAPIS_ORE.get()) && minerJob.level < 5) {
-            event.setCanceled(true);
-            event.getPlayer().sendMessage(new TextComponent("Impossible to break this block, miner level must be 5 but your are level " + minerJob.level), UUID.randomUUID());
-        } else if (block.equals(ModBlocks.DARK_ORE.get()) && minerJob.level < 15) {
-            event.setCanceled(true);
-            event.getPlayer().sendMessage(new TextComponent("Impossible to break this block, miner level must be 15 but your are level " + minerJob.level), UUID.randomUUID());
-        } else if (block.equals(ModBlocks.GOD_ORE.get()) && minerJob.level < 20) {
-            event.setCanceled(true);
-            event.getPlayer().sendMessage(new TextComponent("Impossible to break this block, miner level must be 20 but your are level " + minerJob.level), UUID.randomUUID());
-        }
         if (canUseItem.containsKey(event.getItemStack().getItem().getRegistryName())) {
             Map<Class<?>, Integer> map = canUseItem.get(event.getItemStack().getItem().getRegistryName());
             if (map.containsKey(ExtendedFarmerJobsEntityPlayer.class)) {
                 ExtendedFarmerJobsEntityPlayer farmer = ExtendedFarmerJobsEntityPlayer.get();
                 Integer level = map.get(ExtendedFarmerJobsEntityPlayer.class);
                 if (farmer.level < level) {
-                    event.getEntity().sendMessage(new TextComponent("Your farmer level must be level " + level + " to use " + event.getItemStack().getItem().getRegistryName()), UUID.randomUUID());
+                    event.getEntity().sendMessage(new TextComponent(String.format("Your farmer level must be level %d to use %s", level, event.getItemStack().getItem().getRegistryName())), UUID.randomUUID());
                     event.setCanceled(true);
                 }
             } else if (map.containsKey(ExtendedMinerJobsEntityPlayer.class)) {
                 ExtendedMinerJobsEntityPlayer miner = ExtendedMinerJobsEntityPlayer.get();
                 Integer level = map.get(ExtendedMinerJobsEntityPlayer.class);
                 if (miner.level < level) {
-                    event.getEntity().sendMessage(new TextComponent("Your miner level must be level " + level + " to use " + event.getItemStack().getItem().getRegistryName()), UUID.randomUUID());
+                    event.getEntity().sendMessage(new TextComponent(String.format("Your miner level must be level %d to use %s", level, event.getItemStack().getItem().getRegistryName())), UUID.randomUUID());
                     event.setCanceled(true);
                 }
             } else if (map.containsKey(ExtendedLocksmithJobsEntityPlayer.class)) {
                 ExtendedLocksmithJobsEntityPlayer locksmith = ExtendedLocksmithJobsEntityPlayer.get();
                 Integer level = map.get(ExtendedLocksmithJobsEntityPlayer.class);
                 if (locksmith.level < level) {
-                    event.getEntity().sendMessage(new TextComponent(String.format("Your locksmith level must be level %d to use %d", level, event.getItemStack().getItem().getRegistryName())), UUID.randomUUID());
+                    event.getEntity().sendMessage(new TextComponent(String.format("Your locksmith level must be level %d to use %s", level, event.getItemStack().getItem().getRegistryName())), UUID.randomUUID());
                     event.setCanceled(true);
                 }
             } else if (map.containsKey(ExtendedHunterJobsEntityPlayer.class)) {
@@ -567,6 +552,21 @@ public class ClientSetup {
                     event.setCanceled(true);
                 }
             }
+        }
+        Block block = event.getPlayer().level.getBlockState(event.getPos()).getBlock();
+        ExtendedMinerJobsEntityPlayer minerJob = ExtendedMinerJobsEntityPlayer.get();
+        if (block.equals(ModBlocks.RUBY_ORE.get()) && minerJob.level < 10) {
+            event.setCanceled(true);
+            event.getPlayer().sendMessage(new TextComponent(String.format("Impossible to break this block, miner level must be 10 but your are level %d", minerJob.level)), UUID.randomUUID());
+        } else if (block.equals(ModBlocks.LAPIS_ORE.get()) && minerJob.level < 5) {
+            event.setCanceled(true);
+            event.getPlayer().sendMessage(new TextComponent(String.format("Impossible to break this block, miner level must be 5 but your are level %d", minerJob.level)), UUID.randomUUID());
+        } else if (block.equals(ModBlocks.DARK_ORE.get()) && minerJob.level < 15) {
+            event.setCanceled(true);
+            event.getPlayer().sendMessage(new TextComponent(String.format("Impossible to break this block, miner level must be 15 but your are level %d", minerJob.level)), UUID.randomUUID());
+        } else if (block.equals(ModBlocks.GOD_ORE.get()) && minerJob.level < 20) {
+            event.setCanceled(true);
+            event.getPlayer().sendMessage(new TextComponent(String.format("Impossible to break this block, miner level must be 20 but your are level %d", minerJob.level)), UUID.randomUUID());
         }
     }
 
@@ -583,12 +583,12 @@ public class ClientSetup {
     @SubscribeEvent
     public void onEntityAttack(AttackEntityEvent event) {
         if (canUseItem.containsKey(event.getPlayer().getMainHandItem().getItem().getRegistryName())) {
-            Map<Class<?>, Integer> map = canUseItem.get(event.getPlayer().getUseItem().getItem().getRegistryName());
+            Map<Class<?>, Integer> map = canUseItem.get(event.getPlayer().getMainHandItem().getItem().getRegistryName());
             if (map.containsKey(ExtendedHunterJobsEntityPlayer.class)) {
                 ExtendedHunterJobsEntityPlayer hunter = ExtendedHunterJobsEntityPlayer.get();
                 Integer level = map.get(ExtendedHunterJobsEntityPlayer.class);
                 if (hunter.level < level) {
-                    event.getEntity().sendMessage(new TextComponent(String.format("Your hunter level must be level %d to use %s", level, event.getPlayer().getUseItem().getItem().getRegistryName())), UUID.randomUUID());
+                    event.getEntity().sendMessage(new TextComponent(String.format("Your hunter level must be level %d to use %s", level, event.getPlayer().getMainHandItem().getItem().getRegistryName())), UUID.randomUUID());
                     event.setCanceled(true);
                 }
             }

@@ -11,10 +11,12 @@ public class PacketMinerJobs {
 
     private static long xp;
     private static int level;
+    private static long maxXp;
 
-    public PacketMinerJobs(long xp, int level) {
+    public PacketMinerJobs(long xp, int level, long maxXp) {
         this.xp = xp;
         this.level = level;
+        this.maxXp = maxXp;
     }
 
     public PacketMinerJobs() {
@@ -25,6 +27,7 @@ public class PacketMinerJobs {
             ExtendedMinerJobsEntityPlayer props = ExtendedMinerJobsEntityPlayer.get();
             packetJobs.xp = props.xp;
             packetJobs.level = props.level;
+            packetJobs.maxXp = props.maxXp;
         });
         return true;
     }
@@ -32,9 +35,10 @@ public class PacketMinerJobs {
     public static void encode(PacketMinerJobs packetHunterJobs, FriendlyByteBuf friendlyByteBuf) {
         friendlyByteBuf.writeLong(packetHunterJobs.xp);
         friendlyByteBuf.writeInt(packetHunterJobs.level);
+        friendlyByteBuf.writeLong(packetHunterJobs.maxXp);
     }
 
     public static PacketMinerJobs decode(FriendlyByteBuf friendlyByteBuf) {
-        return new PacketMinerJobs(friendlyByteBuf.readLong(), friendlyByteBuf.readInt());
+        return new PacketMinerJobs(friendlyByteBuf.readLong(), friendlyByteBuf.readInt(), friendlyByteBuf.readLong());
     }
 }

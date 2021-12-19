@@ -10,11 +10,13 @@ import java.util.function.Supplier;
 public class PacketWizardJobs {
 
     private static long xp;
+    private static long maxXp;
     private static int level;
 
-    public PacketWizardJobs(long xp, int level) {
+    public PacketWizardJobs(long xp, int level, long maxXp) {
         this.xp = xp;
         this.level = level;
+        this.maxXp = maxXp;
     }
 
     public PacketWizardJobs() {
@@ -25,6 +27,7 @@ public class PacketWizardJobs {
             ExtendedWizardJobsEntityPlayer props = ExtendedWizardJobsEntityPlayer.get();
             packetJobs.xp = props.xp;
             packetJobs.level = props.level;
+            packetJobs.maxXp = props.maxXp;
         });
         return true;
     }
@@ -32,9 +35,10 @@ public class PacketWizardJobs {
     public static void encode(PacketWizardJobs packetHunterJobs, FriendlyByteBuf friendlyByteBuf) {
         friendlyByteBuf.writeLong(packetHunterJobs.xp);
         friendlyByteBuf.writeInt(packetHunterJobs.level);
+        friendlyByteBuf.writeLong(packetHunterJobs.maxXp);
     }
 
     public static PacketWizardJobs decode(FriendlyByteBuf friendlyByteBuf) {
-        return new PacketWizardJobs(friendlyByteBuf.readLong(), friendlyByteBuf.readInt());
+        return new PacketWizardJobs(friendlyByteBuf.readLong(), friendlyByteBuf.readInt(), friendlyByteBuf.readLong());
     }
 }

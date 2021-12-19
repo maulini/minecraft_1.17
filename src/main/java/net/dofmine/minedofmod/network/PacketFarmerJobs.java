@@ -11,10 +11,12 @@ public class PacketFarmerJobs {
 
     private static long xp;
     private static int level;
+    private static long maxXp;
 
-    public PacketFarmerJobs(long xp, int level) {
+    public PacketFarmerJobs(long xp, int level, long maxXp) {
         this.xp = xp;
         this.level = level;
+        this.maxXp = maxXp;
     }
 
     public PacketFarmerJobs() {
@@ -25,6 +27,7 @@ public class PacketFarmerJobs {
             ExtendedFarmerJobsEntityPlayer props = ExtendedFarmerJobsEntityPlayer.get();
             packetJobs.xp = props.xp;
             packetJobs.level = props.level;
+            packetJobs.maxXp = props.maxXp;
         });
         return true;
     }
@@ -32,9 +35,10 @@ public class PacketFarmerJobs {
     public static void encode(PacketFarmerJobs packetHunterJobs, FriendlyByteBuf friendlyByteBuf) {
         friendlyByteBuf.writeLong(packetHunterJobs.xp);
         friendlyByteBuf.writeInt(packetHunterJobs.level);
+        friendlyByteBuf.writeLong(packetHunterJobs.maxXp);
     }
 
     public static PacketFarmerJobs decode(FriendlyByteBuf friendlyByteBuf) {
-        return new PacketFarmerJobs(friendlyByteBuf.readLong(), friendlyByteBuf.readInt());
+        return new PacketFarmerJobs(friendlyByteBuf.readLong(), friendlyByteBuf.readInt(), friendlyByteBuf.readLong());
     }
 }
