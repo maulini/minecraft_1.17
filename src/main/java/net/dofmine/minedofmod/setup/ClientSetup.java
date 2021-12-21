@@ -475,6 +475,7 @@ public class ClientSetup {
             addUseItem(ModItems.GOD_SWORD.get().getRegistryName(), ExtendedHunterJobsEntityPlayer.class, 20);
             addUseItem(ModItems.GOD_SHOVEL.get().getRegistryName(), ExtendedFarmerJobsEntityPlayer.class, 20);
             addUseItem(ModItems.GOD_PICKAXE.get().getRegistryName(), ExtendedMinerJobsEntityPlayer.class, 20);
+//            addUseItem(ModItems.THOR_HAMMER.get().getRegistryName(), ExtendedHunterJobsEntityPlayer.class, 20);
 
             addUseItem(ModItems.TELEPORTATE_KEY.get().getRegistryName(), ExtendedLocksmithJobsEntityPlayer.class, 7);
             addUseItem(ModItems.RED_KEY.get().getRegistryName(), ExtendedLocksmithJobsEntityPlayer.class, 6);
@@ -572,32 +573,28 @@ public class ClientSetup {
 
     @SubscribeEvent
     public void onTickWorld(LivingEntityUseItemEvent.Tick event) {
-        System.err.println("C'est un tick");
-        addMana += 0.005;
-        if (addMana == 1) {
-            ExtendedEntityPlayer.get().addMana(1);
-            addMana = 0;
-        }
     }
 
     @SubscribeEvent
     public void onEntityAttack(AttackEntityEvent event) {
-        if (canUseItem.containsKey(event.getPlayer().getMainHandItem().getItem().getRegistryName())) {
-            Map<Class<?>, Integer> map = canUseItem.get(event.getPlayer().getMainHandItem().getItem().getRegistryName());
-            if (map.containsKey(ExtendedHunterJobsEntityPlayer.class)) {
-                ExtendedHunterJobsEntityPlayer hunter = ExtendedHunterJobsEntityPlayer.get();
-                Integer level = map.get(ExtendedHunterJobsEntityPlayer.class);
-                if (hunter.level < level) {
-                    event.getEntity().sendMessage(new TextComponent(String.format("Your hunter level must be level %d to use %s", level, event.getPlayer().getMainHandItem().getItem().getRegistryName())), UUID.randomUUID());
-                    event.setCanceled(true);
+        if (!event.getPlayer().level.isClientSide) {
+            if (canUseItem.containsKey(event.getPlayer().getMainHandItem().getItem().getRegistryName())) {
+                Map<Class<?>, Integer> map = canUseItem.get(event.getPlayer().getMainHandItem().getItem().getRegistryName());
+                if (map.containsKey(ExtendedHunterJobsEntityPlayer.class)) {
+                    ExtendedHunterJobsEntityPlayer hunter = ExtendedHunterJobsEntityPlayer.get();
+                    Integer level = map.get(ExtendedHunterJobsEntityPlayer.class);
+                    if (hunter.level < level) {
+                        event.getEntity().sendMessage(new TextComponent(String.format("Your hunter level must be level %d to use %s", level, event.getPlayer().getMainHandItem().getItem().getRegistryName())), UUID.randomUUID());
+                        event.setCanceled(true);
+                    }
                 }
             }
-        }
-        if (!event.getPlayer().isCreative() && canAttackEntity.containsKey(event.getTarget().getType())) {
-            ExtendedHunterJobsEntityPlayer hunter = ExtendedHunterJobsEntityPlayer.get();
-            if (hunter.level < canAttackEntity.get(event.getTarget().getType())) {
-                event.getPlayer().sendMessage(new TextComponent(String.format("Your hunter level must be %d to can attack %s", canAttackEntity.get(event.getTarget().getType()) ,event.getTarget().getType())), UUID.randomUUID());
-                event.setCanceled(true);
+            if (!event.getPlayer().isCreative() && canAttackEntity.containsKey(event.getTarget().getType())) {
+                ExtendedHunterJobsEntityPlayer hunter = ExtendedHunterJobsEntityPlayer.get();
+                if (hunter.level < canAttackEntity.get(event.getTarget().getType())) {
+                    event.getPlayer().sendMessage(new TextComponent(String.format("Your hunter level must be %d to can attack %s", canAttackEntity.get(event.getTarget().getType()) ,event.getTarget().getType())), UUID.randomUUID());
+                    event.setCanceled(true);
+                }
             }
         }
     }
@@ -620,7 +617,7 @@ public class ClientSetup {
 
     @SubscribeEvent
     public void onKeyPressed(InputEvent.KeyInputEvent event) {
-        if (event.getKey() == 74 && Minecraft.getInstance().level.isClientSide) {
+        if (event.getKey() == 74 && !Minecraft.getInstance().player.level.isClientSide) {
             ExtendedLocksmithJobsEntityPlayer lockSmith = ExtendedLocksmithJobsEntityPlayer.get();
             ExtendedFarmerJobsEntityPlayer farmer = ExtendedFarmerJobsEntityPlayer.get();
             ExtendedHunterJobsEntityPlayer hunter = ExtendedHunterJobsEntityPlayer.get();
