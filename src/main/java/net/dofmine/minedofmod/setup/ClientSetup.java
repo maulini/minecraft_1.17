@@ -6,12 +6,17 @@ import net.dofmine.minedofmod.block.ModBlocks;
 import net.dofmine.minedofmod.items.ModItems;
 import net.dofmine.minedofmod.job.*;
 import net.dofmine.minedofmod.network.Networking;
+import net.dofmine.minedofmod.screen.ChooseSpellScreen;
+import net.dofmine.minedofmod.screen.JobsScreen;
 import net.dofmine.minedofmod.screen.ManaBar;
+import net.dofmine.minedofmod.tileentity.Spells;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -44,6 +49,7 @@ import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fmlclient.registry.ClientRegistry;
 import net.minecraftforge.fmllegacy.RegistryObject;
 
 import java.lang.reflect.Field;
@@ -63,6 +69,11 @@ public class ClientSetup {
     private static Map<EntityType, Function<Integer, Long>> xpByEntityHunter = new HashMap<>();
     private static Map<EntityType, Integer> canAttackEntity = new HashMap<>();
     private static Map<ResourceLocation, Map<Class<?>, Integer>> canUseItem = new HashMap<>();
+    private static KeyMapping jobsKey;
+    private static KeyMapping chooseSpell;
+    public static KeyMapping spell1;
+    public static KeyMapping spell2;
+    public static KeyMapping spell3;
 
     private float addMana = 0f;
 
@@ -387,6 +398,16 @@ public class ClientSetup {
     }
 
     public static void init(final FMLClientSetupEvent event) {
+        jobsKey = new KeyMapping(MinedofMod.MODS_ID + ".jobs", 74, "key.categories.inventory");
+        ClientRegistry.registerKeyBinding(jobsKey);
+        chooseSpell = new KeyMapping(MinedofMod.MODS_ID + ".chooseSpell", 65, "key.categories.wizard");
+        ClientRegistry.registerKeyBinding(chooseSpell);
+        spell1 = new KeyMapping(MinedofMod.MODS_ID + ".spell1", 87, "key.categories.wizard");
+        ClientRegistry.registerKeyBinding(spell1);
+        spell2 = new KeyMapping(MinedofMod.MODS_ID + ".spell2", 88, "key.categories.wizard");
+        ClientRegistry.registerKeyBinding(spell2);
+        spell3 = new KeyMapping(MinedofMod.MODS_ID + ".spell3", 67, "key.categories.wizard");
+        ClientRegistry.registerKeyBinding(spell3);
         event.enqueueWork(() -> {
         });
     }
@@ -425,6 +446,7 @@ public class ClientSetup {
             ExtendedLocksmithJobsEntityPlayer.register(player, event);
             ExtendedWizardJobsEntityPlayer.register(player, event);
             ExtendedHunterJobsEntityPlayer.register(player, event);
+            new Spells((ServerLevel) player.level);
         }
     }
 
@@ -572,10 +594,6 @@ public class ClientSetup {
     }
 
     @SubscribeEvent
-    public void onTickWorld(LivingEntityUseItemEvent.Tick event) {
-    }
-
-    @SubscribeEvent
     public void onEntityAttack(AttackEntityEvent event) {
         if (!event.getPlayer().level.isClientSide) {
             if (canUseItem.containsKey(event.getPlayer().getMainHandItem().getItem().getRegistryName())) {
@@ -617,19 +635,24 @@ public class ClientSetup {
 
     @SubscribeEvent
     public void onKeyPressed(InputEvent.KeyInputEvent event) {
-        if (event.getKey() == 74 && !Minecraft.getInstance().player.level.isClientSide) {
-            ExtendedLocksmithJobsEntityPlayer lockSmith = ExtendedLocksmithJobsEntityPlayer.get();
-            ExtendedFarmerJobsEntityPlayer farmer = ExtendedFarmerJobsEntityPlayer.get();
-            ExtendedHunterJobsEntityPlayer hunter = ExtendedHunterJobsEntityPlayer.get();
-            ExtendedMinerJobsEntityPlayer miner = ExtendedMinerJobsEntityPlayer.get();
-            ExtendedWizardJobsEntityPlayer wizard = ExtendedWizardJobsEntityPlayer.get();
-            Minecraft.getInstance().player.sendMessage(new TextComponent(String.format("Locksmith level is %d", lockSmith.level)), UUID.randomUUID());
-            Minecraft.getInstance().player.sendMessage(new TextComponent(String.format("Farmer level is %d and exp: %d / %d", farmer.level, farmer.xp, farmer.maxXp)), UUID.randomUUID());
-            Minecraft.getInstance().player.sendMessage(new TextComponent(String.format("Hunter level is %d and exp: %d / %d", hunter.level, hunter.xp, hunter.maxXp)), UUID.randomUUID());
-            Minecraft.getInstance().player.sendMessage(new TextComponent(String.format("Miner level is %d and exp: %d / %d", miner.level, miner.xp, miner.maxXp)), UUID.randomUUID());
-            Minecraft.getInstance().player.sendMessage(new TextComponent(String.format("Wizard level is %d and exp: %d / %d", wizard.level, wizard.xp, wizard.maxXp)), UUID.randomUUID());
+        if (jobsKey.isDown()) {
+            Minecraft.getInstance().setScreen(new JobsScreen(new TextComponent("")));
+        }
+        if (chooseSpell.isDown()) {
+            Minecraft.getInstance().setScreen(new ChooseSpellScreen(new TextComponent("")));
+        }
+        if (spell1.isDown()) {
+            Spells.thunderBolt();
+        }
+        if (spell2.isDown()) {
+
+        }
+        if (spell3.isDown()) {
+
         }
     }
+
+
 
     @SubscribeEvent
     public void onPlayerSleep(PlayerSleepInBedEvent event) {

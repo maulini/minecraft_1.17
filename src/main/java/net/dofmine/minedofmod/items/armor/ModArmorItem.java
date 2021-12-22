@@ -2,7 +2,10 @@ package net.dofmine.minedofmod.items.armor;
 
 import com.google.common.collect.ImmutableMap;
 import net.dofmine.minedofmod.items.ModArmorMaterial;
+import net.dofmine.minedofmod.job.ExtendedHunterJobsEntityPlayer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -18,12 +21,23 @@ import net.minecraft.world.level.block.Blocks;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class ModArmorItem extends ArmorItem {
     private static final Map<ArmorMaterial, List<MobEffect>> MATERIAL_TO_EFFECT_MAP =
             (new ImmutableMap.Builder<ArmorMaterial, List<MobEffect>>())
                     .put(ModArmorMaterial.TITANIUM, Arrays.asList(MobEffects.LUCK))
                     .put(ModArmorMaterial.GOD, Arrays.asList(MobEffects.ABSORPTION, MobEffects.FIRE_RESISTANCE, MobEffects.DAMAGE_RESISTANCE, MobEffects.DAMAGE_BOOST, MobEffects.JUMP))
+                    .build();
+    private static final Map<ArmorMaterial, Integer> MATERIAL_TO_LEVEL_EQUIP =
+            (new ImmutableMap.Builder<ArmorMaterial, Integer>())
+                    .put(ModArmorMaterial.TITANIUM, 3)
+                    .put(ModArmorMaterial.GOD, 20)
+                    .put(ModArmorMaterial.ICE, 8)
+                    .put(ModArmorMaterial.LAVA, 7)
+                    .put(ModArmorMaterial.DARK, 15)
+                    .put(ModArmorMaterial.LAPIS, 5)
+                    .put(ModArmorMaterial.RUBY, 10)
                     .build();
 
     public ModArmorItem(ArmorMaterial material, EquipmentSlot slot, Properties settings) {
@@ -131,5 +145,19 @@ public class ModArmorItem extends ArmorItem {
 
         return helmet.getMaterial() == material && breastplate.getMaterial() == material &&
                 leggings.getMaterial() == material && boots.getMaterial() == material;
+    }
+
+    @Override
+    public boolean canEquip(ItemStack stack, EquipmentSlot armorType, Entity entity) {
+        ExtendedHunterJobsEntityPlayer hunter = ExtendedHunterJobsEntityPlayer.get();
+        if (MATERIAL_TO_LEVEL_EQUIP.containsKey(((ModArmorItem)stack.getItem()).material)) {
+            Integer level = MATERIAL_TO_LEVEL_EQUIP.get(((ModArmorItem) stack.getItem()).material);
+            boolean canEquip = level <= hunter.level;
+            if (!canEquip) {
+                Minecraft.getInstance().player.sendMessage(new TextComponent(String.format("You can't equip this armor %s because your hunter level must be %d and actually is %d", stack.getItem().getRegistryName(), level, hunter.level)), UUID.randomUUID());
+            }
+            return canEquip;
+        }
+        return super.canEquip(stack, armorType, entity);
     }
 }

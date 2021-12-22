@@ -74,5 +74,11 @@
   "block.mods.special_door": "Special Door",
   "screen.mods.crafting_table": "Crafting Table",
   "screen.mods.back_pack": "Back Pack",
-  "screen.mods.teleportate": ""
+  "screen.mods.teleportate": "",
+  "mods.jobs": "Open Jobs Inventory",
+  "key.categories.wizard": "Wizard",
+  "mods.spellChoose": "Choose spell",
+  "mods.spell1": "Spell 1",
+  "mods.spell2": "Spell 2",
+  "mods.spell3": "Spell 3"
 }

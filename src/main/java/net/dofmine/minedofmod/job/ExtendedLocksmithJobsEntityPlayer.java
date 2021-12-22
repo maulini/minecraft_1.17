@@ -68,7 +68,10 @@ public class ExtendedLocksmithJobsEntityPlayer implements ICapabilitySerializabl
     }
 
     public void addLevel(int amount) {
-        level++;
+        level += amount;
+        if (level > 20) {
+            level = 20;
+        }
         this.sync();
     }
 
