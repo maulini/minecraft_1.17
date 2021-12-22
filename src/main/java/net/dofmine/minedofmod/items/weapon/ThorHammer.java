@@ -30,29 +30,31 @@ public class ThorHammer extends TridentItem {
     @Override
     public InteractionResult useOn(UseOnContext context) {
         Level level = context.getLevel();
-        BlockPos firstBlock = context.getClickedPos();
-        BlockPos rightBlock = new BlockPos(firstBlock.getX() + 1, firstBlock.getY(), firstBlock.getZ());
-        BlockPos leftBlock = new BlockPos(firstBlock.getX() - 1, firstBlock.getY(), firstBlock.getZ());
-        BlockPos torchBlockLeft = new BlockPos(leftBlock.getX(), leftBlock.getY() + 1, leftBlock.getZ());
-        BlockPos torchBlockRight = new BlockPos(rightBlock.getX(), rightBlock.getY() + 1, rightBlock.getZ());
-        BlockPos rightBlockZ = new BlockPos(firstBlock.getX(), firstBlock.getY(), firstBlock.getZ() + 1);
-        BlockPos leftBlockZ = new BlockPos(firstBlock.getX(), firstBlock.getY(), firstBlock.getZ() - 1);
-        BlockPos torchBlockLeftZ = new BlockPos(leftBlockZ.getX(), leftBlockZ.getY() + 1, leftBlockZ.getZ());
-        BlockPos torchBlockRightZ = new BlockPos(rightBlockZ.getX(), rightBlockZ.getY() + 1, rightBlockZ.getZ());
-        if (level.getBlockState(firstBlock).getBlock().equals(Blocks.QUARTZ_BLOCK)
-        && level.getBlockState(rightBlock).getBlock().equals(Blocks.QUARTZ_BLOCK) && level.getBlockState(leftBlock).getBlock().equals(Blocks.QUARTZ_BLOCK)
-        && level.getBlockState(torchBlockLeft).getBlock().equals(Blocks.TORCH) && level.getBlockState(torchBlockRight).getBlock().equals(Blocks.TORCH)) {
-            ItemEntity itemGod = new ItemEntity(level, firstBlock.getX(), firstBlock.getY(), firstBlock.getZ(), new ItemStack(ModItems.GOD_INGOT.get(), 1));
-            ExtendedEntityPlayer.get().addMana(10);
-            level.addFreshEntity(itemGod);
-            context.getPlayer().getInventory().removeItem(context.getItemInHand());
-        } else if (level.getBlockState(firstBlock).getBlock().equals(Blocks.QUARTZ_BLOCK)
-                && level.getBlockState(rightBlockZ).getBlock().equals(Blocks.QUARTZ_BLOCK) && level.getBlockState(leftBlockZ).getBlock().equals(Blocks.QUARTZ_BLOCK)
-                && level.getBlockState(torchBlockLeftZ).getBlock().equals(Blocks.TORCH) && level.getBlockState(torchBlockRightZ).getBlock().equals(Blocks.TORCH)) {
-            ItemEntity itemGod = new ItemEntity(level, firstBlock.getX(), firstBlock.getY(), firstBlock.getZ(), new ItemStack(ModItems.GOD_INGOT.get(), 1));
-            ExtendedEntityPlayer.get().addMana(10);
-            level.addFreshEntity(itemGod);
-            context.getPlayer().getInventory().removeItem(context.getItemInHand());
+        if (!level.isClientSide) {
+            BlockPos firstBlock = context.getClickedPos();
+            BlockPos rightBlock = new BlockPos(firstBlock.getX() + 1, firstBlock.getY(), firstBlock.getZ());
+            BlockPos leftBlock = new BlockPos(firstBlock.getX() - 1, firstBlock.getY(), firstBlock.getZ());
+            BlockPos torchBlockLeft = new BlockPos(leftBlock.getX(), leftBlock.getY() + 1, leftBlock.getZ());
+            BlockPos torchBlockRight = new BlockPos(rightBlock.getX(), rightBlock.getY() + 1, rightBlock.getZ());
+            BlockPos rightBlockZ = new BlockPos(firstBlock.getX(), firstBlock.getY(), firstBlock.getZ() + 1);
+            BlockPos leftBlockZ = new BlockPos(firstBlock.getX(), firstBlock.getY(), firstBlock.getZ() - 1);
+            BlockPos torchBlockLeftZ = new BlockPos(leftBlockZ.getX(), leftBlockZ.getY() + 1, leftBlockZ.getZ());
+            BlockPos torchBlockRightZ = new BlockPos(rightBlockZ.getX(), rightBlockZ.getY() + 1, rightBlockZ.getZ());
+            if (level.getBlockState(firstBlock).getBlock().equals(Blocks.QUARTZ_BLOCK)
+                    && level.getBlockState(rightBlock).getBlock().equals(Blocks.QUARTZ_BLOCK) && level.getBlockState(leftBlock).getBlock().equals(Blocks.QUARTZ_BLOCK)
+                    && level.getBlockState(torchBlockLeft).getBlock().equals(Blocks.TORCH) && level.getBlockState(torchBlockRight).getBlock().equals(Blocks.TORCH)) {
+                ItemEntity itemGod = new ItemEntity(level, firstBlock.getX(), firstBlock.getY(), firstBlock.getZ(), new ItemStack(ModItems.GOD_INGOT.get(), 1));
+                ExtendedEntityPlayer.get().addMana(10);
+                level.addFreshEntity(itemGod);
+                context.getPlayer().getInventory().removeItem(context.getItemInHand());
+            } else if (level.getBlockState(firstBlock).getBlock().equals(Blocks.QUARTZ_BLOCK)
+                    && level.getBlockState(rightBlockZ).getBlock().equals(Blocks.QUARTZ_BLOCK) && level.getBlockState(leftBlockZ).getBlock().equals(Blocks.QUARTZ_BLOCK)
+                    && level.getBlockState(torchBlockLeftZ).getBlock().equals(Blocks.TORCH) && level.getBlockState(torchBlockRightZ).getBlock().equals(Blocks.TORCH)) {
+                ItemEntity itemGod = new ItemEntity(level, firstBlock.getX(), firstBlock.getY(), firstBlock.getZ(), new ItemStack(ModItems.GOD_INGOT.get(), 1));
+                ExtendedEntityPlayer.get().addMana(10);
+                level.addFreshEntity(itemGod);
+                context.getPlayer().getInventory().removeItem(context.getItemInHand());
+            }
         }
         return super.useOn(context);
     }
