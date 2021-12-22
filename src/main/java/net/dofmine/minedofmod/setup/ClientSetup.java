@@ -645,10 +645,10 @@ public class ClientSetup {
             Spells.thunderBolt();
         }
         if (spell2.isDown()) {
-
+            Spells.levitation();
         }
         if (spell3.isDown()) {
-
+            Spells.witch();
         }
     }
 
