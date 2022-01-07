@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "mods:block/teleporter_portal_ns"
+    },
+    "axis=z": {
+      "model": "mods:block/teleporter_portal_ew"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "mods:block/grass_dark"
+      },
+      {
+        "model": "mods:block/grass_dark",
+        "y": 90
+      },
+      {
+        "model": "mods:block/grass_dark",
+        "y": 180
+      },
+      {
+        "model": "mods:block/grass_dark",
+        "y": 270
+      }
+    ]
+  }
+}

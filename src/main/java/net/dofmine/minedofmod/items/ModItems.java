@@ -2,9 +2,11 @@ package net.dofmine.minedofmod.items;
 
 import com.google.common.collect.ImmutableMap;
 import net.dofmine.minedofmod.MinedofMod;
+import net.dofmine.minedofmod.block.ModBlocks;
 import net.dofmine.minedofmod.items.armor.ModArmorItem;
 import net.dofmine.minedofmod.items.armor.SpecialBootsArmor;
 import net.dofmine.minedofmod.items.backpack.BackPackItem;
+import net.dofmine.minedofmod.items.finder.ChunkFinder;
 import net.dofmine.minedofmod.items.key.FlyKeyItem;
 import net.dofmine.minedofmod.items.key.KeyItem;
 import net.dofmine.minedofmod.items.key.StrengKeyItem;
@@ -18,6 +20,7 @@ import net.dofmine.minedofmod.job.ExtendedMinerJobsEntityPlayer;
 import net.dofmine.minedofmod.setup.ClientSetup;
 import net.dofmine.minedofmod.tabs.ModCreativeTabs;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -181,6 +184,22 @@ public class ModItems {
             () -> new SpecialBootsArmor(ModArmorMaterial.LAVA, EquipmentSlot.FEET,
                     new Item.Properties().tab(ModCreativeTabs.TOOLS_TABS)));
 
+    /***********************************************
+     ******************* CROPS *********************
+     ***********************************************/
+    public static final RegistryObject<Item> TOMATO = ITEMS.register("tomato",
+            () -> new Item(new Item.Properties().tab(ModCreativeTabs.FOODS_TABS)
+                    .food(new FoodProperties.Builder().nutrition(2).saturationMod(0.2f).build())));
+
+    public static final RegistryObject<Item> TOMATO_SEEDS = ITEMS.register("tomato_seeds",
+            () -> new ItemNameBlockItem(ModBlocks.TOMATO_PLANT.get(),
+                    new Item.Properties().tab(ModCreativeTabs.MODS_TABS)));
+
+    /***********************************************
+     ******************* FINDER ********************
+     ***********************************************/
+    public static final RegistryObject<Item> CHUNK_FINDER = ITEMS.register("chunk_finder",
+            () -> new ChunkFinder(new Item.Properties().tab(ModCreativeTabs.MODS_TABS)));
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

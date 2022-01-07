@@ -25,9 +25,6 @@ public class ModTileEntity {
     public static RegistryObject<BlockEntityType<CraftingTableTile>> CRAFTING_TABLE_TILE = BLOCK_TILE_ENTITY.register("crafting_table", () -> BlockEntityType.Builder.of(
             CraftingTableTile::new, ModBlocks.CRAFTING_TABLE.get()).build(null));
 
-    public static RegistryObject<EntityType<?>> BACk_PACK_ENTITY = ENTITY.register("back_pack", () -> EntityType.Builder.of(
-            BackPackEntity::new, MobCategory.MISC).build("back_pack"));
-
     public static void register(IEventBus event) {
         BLOCK_TILE_ENTITY.register(event);
         ENTITY.register(event);

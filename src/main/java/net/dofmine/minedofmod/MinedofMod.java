@@ -13,8 +13,13 @@ import net.dofmine.minedofmod.network.Networking;
 import net.dofmine.minedofmod.screen.*;
 import net.dofmine.minedofmod.setup.ClientSetup;
 import net.dofmine.minedofmod.tileentity.ModTileEntity;
+import net.dofmine.minedofmod.world.ModWorldType;
+import net.dofmine.minedofmod.world.biome.ModBiomes;
+import net.dofmine.minedofmod.world.dimension.ModDimension;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ExperienceOrbRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -27,6 +32,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.gui.IIngameOverlay;
 import net.minecraftforge.client.gui.OverlayRegistry;
 import net.minecraftforge.common.MinecraftForge;
@@ -46,11 +52,15 @@ import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL;
+import org.w3c.dom.css.Rect;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotTypeMessage;
 import top.theillusivec4.curios.api.SlotTypePreset;
 import top.theillusivec4.curios.api.type.ISlotType;
 
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,6 +72,8 @@ public class MinedofMod {
     // Directly reference a log4j logger.
     private static final Logger LOGGER = LogManager.getLogger();
 
+    private static ResourceLocation customKey = new ResourceLocation(MinedofMod.MODS_ID, "empty_key_slot");
+
     public MinedofMod() {
         // Register the setup method for modloading
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -70,6 +82,8 @@ public class MinedofMod {
         ModTileEntity.register(modEventBus);
         ModContainer.register(modEventBus);
         ModRecipeType.register(modEventBus);
+        ModBiomes.register(modEventBus);
+        modEventBus.addListener(this::initSprite);
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::enqueueIMC);
         modEventBus.addListener(this::doClientStuff);
@@ -80,17 +94,30 @@ public class MinedofMod {
         MinecraftForge.EVENT_BUS.register(new ClientSetup());
     }
 
+    private void initSprite(final TextureStitchEvent.Pre event) {
+        event.addSprite(customKey);
+    }
+
     private void doClientStuff(final FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
+            //Rectangle maximumView = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+            GLFW.glfwSetWindowSize(Minecraft.getInstance().getWindow().getWindow(), 1920, 1080);
+            GLFW.glfwSetWindowPos(Minecraft.getInstance().getWindow().getWindow(), 0, 0);
             MenuScreens.register(ModContainer.LIGHTNING_CHANNELER_CONTAINER.get(), LightningChannelerScreen::new);
             MenuScreens.register(ModContainer.CRAFTING_TABLE_CONTAINER.get(), CraftingTableScreen::new);
             MenuScreens.register(ModContainer.BACK_PACK_CONTAINER.get(), BackPackScreen::new);
         });
+        ItemBlockRenderTypes.setRenderLayer(ModBlocks.SPECIAL_DOOR.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(ModBlocks.TOMATO_PLANT.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(ModBlocks.ORCHID.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(ModBlocks.TELEPORTER_BLOCK.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(ModBlocks.REDWOOD_LEAVES.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(ModBlocks.REDWOOD_SAPLING.get(), RenderType.cutout());
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event) {
         InterModComms.sendTo("curios", SlotTypeMessage.REGISTER_TYPE, () -> new SlotTypeMessage.Builder("key").icon(
-                new ResourceLocation(MinedofMod.MODS_ID, "textures/empty_key_slot.png")).build());
+                customKey).build());
         InterModComms.sendTo("curios", SlotTypeMessage.REGISTER_TYPE, () -> SlotTypePreset.BELT.getMessageBuilder().build());
         InterModComms.sendTo("curios", SlotTypeMessage.REGISTER_TYPE, () -> SlotTypePreset.BACK.getMessageBuilder().build());
     }

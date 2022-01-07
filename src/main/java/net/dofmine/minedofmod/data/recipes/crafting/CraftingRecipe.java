@@ -61,7 +61,7 @@ public class CraftingRecipe implements ICraftingRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipeType.LIGHTNING_SERIALIZER_RECIPE.get();
+        return ModRecipeType.CRAFTING_SERIALIZER_RECIPE.get();
     }
 
     public static class CraftingRecipeType implements RecipeType<CraftingRecipe> {

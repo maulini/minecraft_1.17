@@ -20,4 +20,11 @@ public class ModCreativeTabs {
         }
     };
 
+    public static final CreativeModeTab FOODS_TABS = new CreativeModeTab("foods") {
+        @Override
+        public ItemStack makeIcon() {
+            return new ItemStack(ModItems.TOMATO.get());
+        }
+    };
+
 }

@@ -1,7 +1,7 @@
 package net.dofmine.minedofmod.container;
 
 import net.dofmine.minedofmod.MinedofMod;
-import net.dofmine.minedofmod.tileentity.BackPackEntity;
+import net.dofmine.minedofmod.inventory.BackPackInventory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
@@ -35,8 +35,7 @@ public class ModContainer {
         IForgeContainerType.create(((windowId, inv, data) -> {
             Player player = inv.player;
             ItemStack itemStack = player.getMainHandItem();
-            itemStack.setEntityRepresentation(new BackPackEntity(player.level));
-            return new BackPackContainer(windowId, player, itemStack, inv);
+            return new BackPackContainer(windowId, player, itemStack, new BackPackInventory(itemStack, 27));
         })));
 
     public static void register(IEventBus eventBus) {

@@ -73,6 +73,11 @@ public class ExtendedHunterJobsEntityPlayer implements ICapabilitySerializable {
         return (ExtendedHunterJobsEntityPlayer) attachCapabilitiesEvent.getCapabilities().get(EXT_PROP_NAME);
     }
 
+    public void setLevel(int level) {
+        this.level = level;
+        sync();
+    }
+
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {

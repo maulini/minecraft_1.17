@@ -80,5 +80,24 @@
   "mods.spellChoose": "Choose spell",
   "mods.spell1": "Spell 1",
   "mods.spell2": "Spell 2",
-  "mods.spell3": "Spell 3"
+  "mods.spell3": "Spell 3",
+
+  "block.mods.tomato_plant": "Tomato Plant",
+  "block.mods.orchid": "Orchid",
+
+  "block.mods.redwood_log": "Redwood Log",
+  "block.mods.redwood_planks": "Redwood Planks",
+  "block.mods.redwood_wood": "Redwood Wood",
+  "block.mods.stripped_redwood_log": "Stripped Redwood Log",
+  "block.mods.stripped_redwood_wood": "Stripped Redwood Wood",
+  "block.mods.redwood_sapling": "Redwood Sapling",
+  "block.mods.redwood_leaves": "Redwood Leaves",
+
+  "block.mods.dirt_dark": "Dirt",
+  "block.mods.grass_dark": "Grass",
+  "block.mods.stone_dark": "Stone",
+  "block.mods.cobble_dark": "Cobblestone",
+  "block.mods.ruby_block": "Ruby Block",
+  "block.mods.lapis_block": "Lapis Block",
+  "block.mods.dark_block": "Dark Block"
 }

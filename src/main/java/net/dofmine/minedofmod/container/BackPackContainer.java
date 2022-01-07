@@ -1,12 +1,20 @@
 package net.dofmine.minedofmod.container;
 
 
+import net.dofmine.minedofmod.inventory.BackPackInventory;
 import net.dofmine.minedofmod.items.ModItems;
+import net.dofmine.minedofmod.items.backpack.BackPackItem;
+import net.dofmine.minedofmod.job.ExtendedFarmerJobsEntityPlayer;
+import net.dofmine.minedofmod.job.ExtendedHunterJobsEntityPlayer;
+import net.dofmine.minedofmod.slot.BackPackSlot;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -14,52 +22,71 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
+import java.util.List;
+
 public class BackPackContainer extends AbstractContainerMenu {
     private final Player player;
     private final IItemHandler playerInventory;
+    private final BackPackInventory backPackInventory;
 
-    public BackPackContainer(int windowId, Player player, ItemStack itemStack, Inventory playerInventory) {
+    public BackPackContainer(int windowId, Player player, ItemStack itemStack, BackPackInventory backPackInventory) {
         super(ModContainer.BACK_PACK_CONTAINER.get(), windowId);
-
         this.player = player;
-        this.playerInventory = new InvWrapper(playerInventory);
+        this.playerInventory = new InvWrapper(player.getInventory());
+        this.backPackInventory = backPackInventory;
         layoutPlayerInventorySlots(7, 86);
-        if (itemStack != null) {
-            itemStack.getEntityRepresentation().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(h -> {
-                addSlot(new SlotItemHandler(h, 0, 7, 19));
-                addSlot(new SlotItemHandler(h, 1, 25, 19));
-                addSlot(new SlotItemHandler(h, 2, 43, 19));
-                addSlot(new SlotItemHandler(h, 3, 61, 19));
-                addSlot(new SlotItemHandler(h, 4, 79, 19));
-                addSlot(new SlotItemHandler(h, 5, 97, 19));
-                addSlot(new SlotItemHandler(h, 6, 115, 19));
-                addSlot(new SlotItemHandler(h, 7, 133, 19));
-                addSlot(new SlotItemHandler(h, 8, 151, 19));
-                addSlot(new SlotItemHandler(h, 9, 7, 37));
-                addSlot(new SlotItemHandler(h, 10, 25, 37));
-                addSlot(new SlotItemHandler(h, 11, 43, 37));
-                addSlot(new SlotItemHandler(h, 12, 61, 37));
-                addSlot(new SlotItemHandler(h, 13, 79, 37));
-                addSlot(new SlotItemHandler(h, 14, 97, 37));
-                addSlot(new SlotItemHandler(h, 15, 115, 37));
-                addSlot(new SlotItemHandler(h, 16, 133, 37));
-                addSlot(new SlotItemHandler(h, 17, 151, 37));
-                addSlot(new SlotItemHandler(h, 18, 7, 55));
-                addSlot(new SlotItemHandler(h, 19, 25, 55));
-                addSlot(new SlotItemHandler(h, 20, 43, 55));
-                addSlot(new SlotItemHandler(h, 21, 61, 55));
-                addSlot(new SlotItemHandler(h, 22, 79, 55));
-                addSlot(new SlotItemHandler(h, 23, 97, 55));
-                addSlot(new SlotItemHandler(h, 24, 115, 55));
-                addSlot(new SlotItemHandler(h, 25, 133, 55));
-                addSlot(new SlotItemHandler(h, 26, 151, 55));
-            });
+        ExtendedHunterJobsEntityPlayer hunter = ExtendedHunterJobsEntityPlayer.get();
+        addSlotByLevel(hunter.level, backPackInventory);
+    }
+
+    private void addSlotByLevel(int level, BackPackInventory backPackInventory) {
+        int x = 7;
+        int y = 19;
+        int max = level == 1 ? 1 : level == 2 ? 2 : level == 3 ? 3 : level == 4 ? 4 : level == 5 ? 6 : level == 6 ? 7 : level == 7 ? 8 : level == 8 ? 9 : level == 9 ? 10 : level == 10 ? 12 : level == 11 ? 13 : level == 12 ? 14 : level == 13 ? 15 : level == 14 ? 16 : level == 15 ? 19 : level == 16 ? 20 : level == 17 ? 21 : level == 18 ? 22 : level == 19 ? 23 : 27;
+        for (int i = 0; i < max; i++) {
+            if (i == 0) {
+                addSlot(new BackPackSlot(backPackInventory, i, x, y));
+            }else {
+                x += 18;
+                if (i == 9 || i == 18) {
+                    y += 18;
+                    x = 7;
+                }
+                addSlot(new BackPackSlot(backPackInventory, i, x, y));
+            }
+            if (i == 5 || i == 10) {
+                i++;
+                x += 18;
+                if (i == 9 || i == 18) {
+                    y += 18;
+                    x = 7;
+                }
+                addSlot(new BackPackSlot(backPackInventory, i, x, y));
+            }
+            if (i == 15 || i == 20) {
+                i++;
+                x += 18;
+                if (i == 9 || i == 18) {
+                    y += 18;
+                    x = 7;
+                }
+                addSlot(new BackPackSlot(backPackInventory, i, x, y));
+            }
         }
     }
 
     @Override
     public boolean stillValid(Player playerIn) {
         return true;
+    }
+
+    public void writeToNBT(ItemStack stack) {
+        if (!stack.hasTag()) stack.setTag(new CompoundTag());
+        backPackInventory.writeToNBT(stack.getTag());
+    }
+
+    public void saveContent(Player player) {
+        writeToNBT(player.getMainHandItem());
     }
 
     private int addSlotRange(IItemHandler handler, int index, int x, int y, int amount, int dx) {
@@ -88,55 +115,42 @@ public class BackPackContainer extends AbstractContainerMenu {
         addSlotRange(playerInventory, 0, leftCol, topRow, 9, 18);
     }
 
-    // CREDIT GOES TO: diesieben07 | https://github.com/diesieben07/SevenCommons
-    // must assign a slot number to each of the slots used by the GUI.
-    // For this container, we can see both the tile inventory's slots as well as the player inventory slots and the hotbar.
-    // Each time we add a Slot to the container, it automatically increases the slotIndex, which means
-    //  0 - 8 = hotbar slots (which will map to the InventoryPlayer slot numbers 0 - 8)
-    //  9 - 35 = player inventory slots (which map to the InventoryPlayer slot numbers 9 - 35)
-    //  36 - 44 = TileInventory slots, which map to our TileEntity slot numbers 0 - 8)
-    private static final int HOTBAR_SLOT_COUNT = 9;
-    private static final int PLAYER_INVENTORY_ROW_COUNT = 3;
-    private static final int PLAYER_INVENTORY_COLUMN_COUNT = 9;
-    private static final int PLAYER_INVENTORY_SLOT_COUNT = PLAYER_INVENTORY_COLUMN_COUNT * PLAYER_INVENTORY_ROW_COUNT;
-    private static final int VANILLA_SLOT_COUNT = HOTBAR_SLOT_COUNT + PLAYER_INVENTORY_SLOT_COUNT;
-    private static final int VANILLA_FIRST_SLOT_INDEX = 0;
-    private static final int TE_INVENTORY_FIRST_SLOT_INDEX = VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT;
-
-    // THIS YOU HAVE TO DEFINE!
-    private static final int TE_INVENTORY_SLOT_COUNT = 17;  // must match TileEntityInventoryBasic.NUMBER_OF_SLOTS
-
     @Override
-    public ItemStack quickMoveStack(Player playerIn, int index) {
-        Slot sourceSlot = slots.get(index);
-        if (sourceSlot == null || sourceSlot.getItem() == null) return ItemStack.EMPTY;  //EMPTY_ITEM
-        ItemStack sourceStack = sourceSlot.getItem();
-        ItemStack copyOfSourceStack = sourceStack.copy();
+    public ItemStack quickMoveStack(Player player, int index) {
+        ItemStack itemstack = null;
+        Slot slot = this.slots.get(index);
 
-        // Check if the slot clicked is one of the vanilla container slots
-        if (index < VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT) {
-            // This is a vanilla container slot so merge the stack into the tile inventory
-            if (!moveItemStackTo(sourceStack, TE_INVENTORY_FIRST_SLOT_INDEX, TE_INVENTORY_FIRST_SLOT_INDEX
-                    + TE_INVENTORY_SLOT_COUNT, false)) {
-                return ItemStack.EMPTY;  // EMPTY_ITEM
+        if (slot != null && slot.getItem() != null) {
+            ItemStack itemstack1 = slot.getItem();
+            itemstack = itemstack1.copy();
+
+            // Prevents backpack-ception (backpack inside backpack) with shift-click
+            if (itemstack.getItem() instanceof BackPackItem) return null;
+
+            if (index < this.backPackInventory.getContainerSize()) {
+                if (!this.moveItemStackTo(itemstack1, this.backPackInventory.getContainerSize(), this.slots.size(), true)) return null;
+            } else if (!this.moveItemStackTo(itemstack1, 0, this.backPackInventory.getContainerSize(), false)) { return null; }
+
+            if (itemstack1.getCount() == 0) {
+                slot.set(Items.AIR.getDefaultInstance());
+            } else {
+                slot.setChanged();
             }
-        } else if (index < TE_INVENTORY_FIRST_SLOT_INDEX + TE_INVENTORY_SLOT_COUNT) {
-            // This is a TE slot so merge the stack into the players inventory
-            if (!moveItemStackTo(sourceStack, VANILLA_FIRST_SLOT_INDEX, VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT, false)) {
-                return ItemStack.EMPTY;
-            }
-        } else {
-            System.out.println("Invalid slotIndex:" + index);
-            return ItemStack.EMPTY;
         }
-        // If stack size == 0 (the entire stack was moved) set slot contents to null
-        if (sourceStack.getCount() == 0) {
-            sourceSlot.safeInsert(ItemStack.EMPTY);
-        } else {
-            sourceSlot.setChanged();
-        }
-        sourceSlot.onTake(player, sourceStack);
-        return copyOfSourceStack;
+
+        return itemstack;
+    }
+
+    /**
+     * @param buttonPressed left click, right click, wheel click, etc.
+     * @param flag category (e.g.: hotbar keys)
+     */
+    @Override
+    public void clicked(int slotIndex, int buttonPressed, ClickType flag, Player player) {
+        // Prevents from removing current backpack
+        if (flag == ClickType.PICKUP_ALL && buttonPressed == player.getInventory().selected) return;
+        if (slotIndex - this.backPackInventory.getContainerSize() - 27 == player.getInventory().getContainerSize()) return;
+        super.clicked(slotIndex, buttonPressed, flag, player);
     }
 
 }
