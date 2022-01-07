@@ -2,6 +2,10 @@
   "replace": false,
   "values": [
     "mods:titanium_block",
-    "mods:titanium_ore"
+    "mods:titanium_ore",
+    "mods:ruby_ore",
+    "mods:dark_ore",
+    "mods:lapis_ore",
+    "mods:god_ore"
   ]
 }
