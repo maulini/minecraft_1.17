@@ -40,6 +40,8 @@ public class ModBiomes {
         generationSettings.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, ModConfiguredFeatures.GOD_ORE);
         generationSettings.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, ModConfiguredFeatures.DARK_ORE);
         generationSettings.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, ModConfiguredFeatures.LAPIS_ORE);
+        generationSettings.addFeature(GenerationStep.Decoration.LAKES, ModConfiguredFeatures.STYX);
+
         generationSettings.addFeature(GenerationStep.Decoration.VEGETAL_DECORATION,  ModConfiguredFeatures.REDWOOD
                 .decorated(Features.Decorators.HEIGHTMAP_WITH_TREE_THRESHOLD_SQUARED)
                 .decorated(FeatureDecorator.COUNT_EXTRA

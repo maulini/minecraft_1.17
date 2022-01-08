@@ -68,6 +68,7 @@
   "block.mods.titanium_ore": "Titanium Ore",
   "itemGroup.modsTabs": "Mods Tabs",
   "itemGroup.toolsTabs": "Tools Mods Tabs",
+  "itemGroup.foods": "Foods Mods Tabs",
   "block.mods.lightning_channeler": "Lightning Channeler",
   "screen.mods.lightning_channeler": "Lightning Channeler",
   "block.mods.crafting_table": "Crafting Table",
@@ -81,10 +82,8 @@
   "mods.spell1": "Spell 1",
   "mods.spell2": "Spell 2",
   "mods.spell3": "Spell 3",
-
   "block.mods.tomato_plant": "Tomato Plant",
   "block.mods.orchid": "Orchid",
-
   "block.mods.redwood_log": "Redwood Log",
   "block.mods.redwood_planks": "Redwood Planks",
   "block.mods.redwood_wood": "Redwood Wood",
@@ -92,12 +91,20 @@
   "block.mods.stripped_redwood_wood": "Stripped Redwood Wood",
   "block.mods.redwood_sapling": "Redwood Sapling",
   "block.mods.redwood_leaves": "Redwood Leaves",
-
   "block.mods.dirt_dark": "Dirt",
   "block.mods.grass_dark": "Grass",
   "block.mods.stone_dark": "Stone",
   "block.mods.cobble_dark": "Cobblestone",
   "block.mods.ruby_block": "Ruby Block",
   "block.mods.lapis_block": "Lapis Block",
-  "block.mods.dark_block": "Dark Block"
+  "block.mods.dark_block": "Dark Block",
+  "block.mods.globe": "Globe of LouLoutte",
+  "block.mods.lapis_ore": "Azurite Ore",
+  "block.mods.dark_ore": "Dark Ore",
+  "block.mods.ruby_ore": "Ruby Ore",
+  "block.mods.gods_ore": "Gods Ore",
+  "item.mods.styx_bucket": "Styx Bucket",
+  "item.mods.chunk_finder": "Item Finder",
+  "item.mods.tomato": "Tomato",
+  "item.mods.tomato_seeds": "Tomato Seeds"
 }

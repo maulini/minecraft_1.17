@@ -48,6 +48,8 @@ public class ModConfiguredFeatures {
     public static final ConfiguredFeature<?, ?> GOD_ORE = register("god_ore", Feature.ORE.configured(registerOre(OreType.GODS_ORE))
             .range(rangeConfiguration(OreType.GODS_ORE)).squared().count(OreType.GODS_ORE.getVeinsPerChunk()));
 
+    public static final ConfiguredFeature<?, ?> STYX = register("styx", Feature.LAKE.configured(new BlockStateConfiguration(ModBlocks.STYX.get().defaultBlockState())).range(Features.Decorators.FULL_RANGE).squared().rarity(4));
+
     private static <FC extends FeatureConfiguration>ConfiguredFeature<FC, ?> register(String name,
                                                                                       ConfiguredFeature<FC, ?> configuredFeature) {
         return Registry.register(BuiltinRegistries.CONFIGURED_FEATURE, name, configuredFeature);
