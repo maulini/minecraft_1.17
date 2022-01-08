@@ -3,6 +3,7 @@ package net.dofmine.minedofmod.block;
 import net.dofmine.minedofmod.MinedofMod;
 import net.dofmine.minedofmod.block.custom.*;
 import net.dofmine.minedofmod.block.custom.CraftingTableBlock;
+import net.dofmine.minedofmod.block.fluid.ModFluids;
 import net.dofmine.minedofmod.items.ModItems;
 import net.dofmine.minedofmod.setup.ClientSetup;
 import net.dofmine.minedofmod.tabs.ModCreativeTabs;
@@ -18,9 +19,11 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -157,6 +160,11 @@ public class ModBlocks {
     public static final RegistryObject<Block> GRASS_DARK = registerBlock("grass_dark", () -> new Block(BlockBehaviour.Properties.copy(Blocks.DIRT)), null);
     public static final RegistryObject<Block> STONE_DARK = registerBlock("stone_dark", () -> new Block(BlockBehaviour.Properties.copy(Blocks.STONE)), null);
     public static final RegistryObject<Block> COBBLE_DARK = registerBlock("cobble_dark", () -> new Block(BlockBehaviour.Properties.copy(Blocks.COBBLESTONE)), null);
+
+    /***********************************
+     ************** FLUIDS *************
+     ***********************************/
+    public static final RegistryObject<Block> STYX = BLOCKS.register("styx", () -> new CustomLiquidBlock(() -> (ForgeFlowingFluid) ModFluids.STYX.get(), BlockBehaviour.Properties.of(Material.WATER).noCollission().strength(50.0F).noDrops()));
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block, Function<Integer, Long> function) {
         RegistryObject<T> toReturn = BLOCKS.register(name, block);

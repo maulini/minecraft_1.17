@@ -3,6 +3,7 @@ package net.dofmine.minedofmod.items;
 import com.google.common.collect.ImmutableMap;
 import net.dofmine.minedofmod.MinedofMod;
 import net.dofmine.minedofmod.block.ModBlocks;
+import net.dofmine.minedofmod.block.fluid.ModFluids;
 import net.dofmine.minedofmod.items.armor.ModArmorItem;
 import net.dofmine.minedofmod.items.armor.SpecialBootsArmor;
 import net.dofmine.minedofmod.items.backpack.BackPackItem;
@@ -200,6 +201,12 @@ public class ModItems {
      ***********************************************/
     public static final RegistryObject<Item> CHUNK_FINDER = ITEMS.register("chunk_finder",
             () -> new ChunkFinder(new Item.Properties().tab(ModCreativeTabs.MODS_TABS)));
+
+    /***********************************************
+     *************** BUCKET FLUID ******************
+     ***********************************************/
+    public static final RegistryObject<Item> STYX_BUCKET = ITEMS.register("styx_bucket",
+            () -> new BucketItem(() -> ModFluids.STYX.get(), new Item.Properties().tab(ModCreativeTabs.MODS_TABS).stacksTo(1)));
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

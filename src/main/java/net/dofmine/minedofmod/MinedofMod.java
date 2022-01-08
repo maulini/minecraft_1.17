@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.ScreenManager;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.dofmine.minedofmod.block.ModBlocks;
+import net.dofmine.minedofmod.block.fluid.ModFluids;
 import net.dofmine.minedofmod.container.BackPackContainer;
 import net.dofmine.minedofmod.container.ModContainer;
 import net.dofmine.minedofmod.data.recipes.ModRecipeType;
@@ -83,6 +84,7 @@ public class MinedofMod {
         ModContainer.register(modEventBus);
         ModRecipeType.register(modEventBus);
         ModBiomes.register(modEventBus);
+        ModFluids.register(modEventBus);
         modEventBus.addListener(this::initSprite);
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::enqueueIMC);
@@ -113,6 +115,9 @@ public class MinedofMod {
         ItemBlockRenderTypes.setRenderLayer(ModBlocks.TELEPORTER_BLOCK.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(ModBlocks.REDWOOD_LEAVES.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(ModBlocks.REDWOOD_SAPLING.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(ModFluids.STYX.get(), RenderType.translucent());
+        ItemBlockRenderTypes.setRenderLayer(ModFluids.STYX_FLOWING.get(), RenderType.translucent());
+        ItemBlockRenderTypes.setRenderLayer(ModBlocks.STYX.get(), RenderType.translucent());
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event) {
