@@ -166,6 +166,11 @@ public class ModBlocks {
      ***********************************/
     public static final RegistryObject<Block> STYX = BLOCKS.register("styx", () -> new CustomLiquidBlock(() -> (ForgeFlowingFluid) ModFluids.STYX.get(), BlockBehaviour.Properties.of(Material.WATER).noCollission().strength(50.0F).noDrops()));
 
+    /***********************************
+     ************** CUSTOM *************
+     ***********************************/
+    public static final RegistryObject<Block> ELEVATOR_BLOCK = registerBlock("elevator_block", () -> new ElevatorBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)), null);
+
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block, Function<Integer, Long> function) {
         RegistryObject<T> toReturn = BLOCKS.register(name, block);
         registererBlockItem(name, toReturn, function);

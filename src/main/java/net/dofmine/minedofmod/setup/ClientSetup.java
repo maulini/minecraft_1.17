@@ -3,6 +3,7 @@ package net.dofmine.minedofmod.setup;
 import com.google.common.collect.ImmutableMap;
 import net.dofmine.minedofmod.MinedofMod;
 import net.dofmine.minedofmod.block.ModBlocks;
+import net.dofmine.minedofmod.block.custom.ElevatorBlock;
 import net.dofmine.minedofmod.container.BackPackContainer;
 import net.dofmine.minedofmod.items.ModItems;
 import net.dofmine.minedofmod.job.*;
@@ -13,6 +14,9 @@ import net.dofmine.minedofmod.screen.ManaBar;
 import net.dofmine.minedofmod.tileentity.Spells;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.Option;
+import net.minecraft.client.Options;
+import net.minecraft.client.player.KeyboardInput;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.TextComponent;
@@ -40,6 +44,7 @@ import net.minecraftforge.event.entity.item.ItemEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDestroyBlockEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.*;
 import net.minecraftforge.event.furnace.FurnaceFuelBurnTimeEvent;
 import net.minecraftforge.event.world.BlockEvent;
@@ -74,6 +79,7 @@ public class ClientSetup {
     public static KeyMapping spell3;
 
     private float addMana = 0f;
+    private boolean canTeleportate = true;
 
     public ClientSetup() {
         addBlocks(Blocks.COAL_ORE, i -> {
@@ -653,6 +659,9 @@ public class ClientSetup {
         if (spell3.isDown()) {
             Spells.witch();
         }
+        if (event.getKey() == Minecraft.getInstance().options.keyShift.getKey().getValue() && !Minecraft.getInstance().options.keyShift.isDown()) {
+            canTeleportate = true;
+        }
     }
 
     @SubscribeEvent
@@ -667,6 +676,30 @@ public class ClientSetup {
         if (event.getEntity().level.isClientSide) {
             ExtendedEntityPlayer.get().spend(-10);
         }
+    }
+
+    @SubscribeEvent
+    public void onPlayerJump(LivingEvent.LivingJumpEvent event) {
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            if (serverPlayer.level.getBlockState(serverPlayer.blockPosition().atY(serverPlayer.blockPosition().getY() - 1)).getBlock() instanceof ElevatorBlock elevatorBlock) {
+                elevatorBlock.upTeleport(serverPlayer);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onUpdateMovement(LivingEvent.LivingUpdateEvent event) {
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            if (canTeleportate && serverPlayer.isShiftKeyDown() && serverPlayer.level.getBlockState(serverPlayer.blockPosition().atY(serverPlayer.blockPosition().getY() - 1)).getBlock() instanceof ElevatorBlock elevatorBlock) {
+                event.setCanceled(true);
+                canTeleportate = false;
+                elevatorBlock.downTeleport(serverPlayer);
+            }
+        }
+    }
+    @SubscribeEvent
+    public void onUpdateMovement(EntityItemPickupEvent event) {
+        System.err.println("Je récupère des items");
     }
 
 }

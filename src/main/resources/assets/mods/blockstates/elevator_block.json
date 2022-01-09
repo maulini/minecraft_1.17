@@ -1,0 +1,21 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "mods:block/elevator_block"
+      },
+      {
+        "model": "mods:block/elevator_block",
+        "y": 90
+      },
+      {
+        "model": "mods:block/elevator_block",
+        "y": 180
+      },
+      {
+        "model": "mods:block/elevator_block",
+        "y": 270
+      }
+    ]
+  }
+}

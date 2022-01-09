@@ -106,5 +106,6 @@
   "item.mods.styx_bucket": "Styx Bucket",
   "item.mods.chunk_finder": "Item Finder",
   "item.mods.tomato": "Tomato",
-  "item.mods.tomato_seeds": "Tomato Seeds"
+  "item.mods.tomato_seeds": "Tomato Seeds",
+  "block.mods.elevator_block": "Elevator Block"
 }
