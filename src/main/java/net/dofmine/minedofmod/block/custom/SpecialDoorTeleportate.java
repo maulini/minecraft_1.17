@@ -31,58 +31,19 @@ import java.io.Serializable;
 
 public class SpecialDoorTeleportate extends DoorBlock implements Cloneable {
 
-    private  BlockPos blockPos;
-
     public SpecialDoorTeleportate() {
         super(BlockBehaviour.Properties.of(Material.STONE, MaterialColor.DIAMOND).strength(5.0F).sound(SoundType.METAL).noOcclusion());
     }
 
-    public SpecialDoorTeleportate(BlockPos blockPos) {
-        super(BlockBehaviour.Properties.of(Material.STONE, MaterialColor.DIAMOND).strength(5.0F).sound(SoundType.METAL).noOcclusion());
-        this.blockPos = blockPos;
+    @Override
+    public InteractionResult use(BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, BlockHitResult blockHitResult) {
+            return InteractionResult.PASS;
     }
 
-    public InteractionResult use(BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand hand, BlockHitResult blockHitResult) {
-        this.blockPos = blockPos;
-        if (player.getItemInHand(hand).getItem() instanceof  TeleportateKey teleportateKey) {
-            teleportateKey.resolveTeleportKeyComponents(player.getItemInHand(hand), player.createCommandSourceStack(), player);
-            if (!isOpen(blockState)) {
-                if (level.isClientSide) {
-                    try {
-                        SpecialDoorTeleportate clone = (SpecialDoorTeleportate) this.clone();
-                        if (!teleportateKey.isPresent(clone)) {
-                            teleportateKey.addDoorTeleportate(clone);
-                        }
-                        Minecraft.getInstance().setScreen(new TeleportateScreen(teleportateKey, player, level));
-                    } catch (CloneNotSupportedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                blockState = blockState.cycle(OPEN);
-                level.setBlock(blockPos, blockState, 10);
-                level.levelEvent(player, this.getOpenSound(), blockPos, 0);
-                level.gameEvent(player, GameEvent.BLOCK_OPEN, blockPos);
-            }else {
-                blockState = blockState.cycle(OPEN);
-                level.setBlock(blockPos, blockState, 10);
-                level.levelEvent(player, this.getCloseSound(), blockPos, 0);
-                level.gameEvent(player, GameEvent.BLOCK_CLOSE, blockPos);
-            }
-            return InteractionResult.SUCCESS;
-        }
-        return InteractionResult.PASS;
+    public void openOrCloseDoor(BlockState blockState, Level level, BlockPos blockPos, Player player) {
+        blockState = blockState.cycle(OPEN);
+        level.setBlock(blockPos, blockState, 10);
+        level.levelEvent(player, blockState.getValue(OPEN) ? 1005 : 1011, blockPos, 0);
+        level.gameEvent(player, this.isOpen(blockState) ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, blockPos);
     }
-
-    private int getCloseSound() {
-        return 1011;
-    }
-
-    private int getOpenSound() {
-        return 1005;
-    }
-
-    public BlockPos getBlockPos() {
-        return blockPos;
-    }
-
 }
