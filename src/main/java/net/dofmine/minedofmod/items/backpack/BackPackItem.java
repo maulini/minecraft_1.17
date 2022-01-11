@@ -10,9 +10,11 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TridentItem;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.fmllegacy.network.NetworkHooks;
 
@@ -43,8 +45,7 @@ public class BackPackItem extends Item {
             @Nullable
             @Override
             public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
-                //itemStack.setEntityRepresentation(ModTileEntity.BACk_PACK_ENTITY.get().create(player.level));
-                return new BackPackContainer(i, player, itemStack, new BackPackInventory(itemStack, 27));
+                return new BackPackContainer(i, player, new BackPackInventory(itemStack, 27));
             }
         };
     }

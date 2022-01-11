@@ -1,23 +1,18 @@
 package net.dofmine.minedofmod.setup;
 
-import com.google.common.collect.ImmutableMap;
 import net.dofmine.minedofmod.MinedofMod;
 import net.dofmine.minedofmod.block.ModBlocks;
 import net.dofmine.minedofmod.block.custom.ElevatorBlock;
 import net.dofmine.minedofmod.container.BackPackContainer;
 import net.dofmine.minedofmod.items.ModItems;
+import net.dofmine.minedofmod.items.backpack.VacuumBackPack;
 import net.dofmine.minedofmod.job.*;
-import net.dofmine.minedofmod.network.Networking;
 //import net.dofmine.minedofmod.screen.ChooseSpellScreen;
 import net.dofmine.minedofmod.screen.JobsScreen;
 import net.dofmine.minedofmod.screen.ManaBar;
 import net.dofmine.minedofmod.tileentity.Spells;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.Option;
-import net.minecraft.client.Options;
-import net.minecraft.client.player.KeyboardInput;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -25,43 +20,36 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.monster.Ravager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityEvent;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.item.ItemEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingDestroyBlockEvent;
-import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.*;
-import net.minecraftforge.event.furnace.FurnaceFuelBurnTimeEvent;
 import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fmlclient.registry.ClientRegistry;
-import net.minecraftforge.fmllegacy.RegistryObject;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber(modid = MinedofMod.MODS_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClientSetup {
@@ -72,6 +60,8 @@ public class ClientSetup {
     private static Map<EntityType, Function<Integer, Long>> xpByEntityHunter = new HashMap<>();
     private static Map<EntityType, Integer> canAttackEntity = new HashMap<>();
     private static Map<ResourceLocation, Map<Class<?>, Integer>> canUseItem = new HashMap<>();
+    public static final RecipeSerializer<net.dofmine.minedofmod.data.recipes.vacuum.VacuumBackPack> VACUUM_CRAFTING = null;
+    public static final RecipeSerializer<net.dofmine.minedofmod.data.recipes.vacuum.RevertVacuumBackPack> REVERT_VACUUM_CRAFTING = null;
     private static KeyMapping jobsKey;
     private static KeyMapping chooseSpell;
     public static KeyMapping spell1;
@@ -80,6 +70,7 @@ public class ClientSetup {
 
     private float addMana = 0f;
     private boolean canTeleportate = true;
+    private ServerLevel serverLevel;
 
     public ClientSetup() {
         addBlocks(Blocks.COAL_ORE, i -> {
@@ -454,6 +445,7 @@ public class ClientSetup {
             ExtendedWizardJobsEntityPlayer.register(player, event);
             ExtendedHunterJobsEntityPlayer.register(player, event);
             new Spells((ServerLevel) player.level);
+            this.serverLevel = (ServerLevel) player.level;
         }
     }
 
@@ -632,6 +624,15 @@ public class ClientSetup {
             ExtendedFarmerJobsEntityPlayer farmer = ExtendedFarmerJobsEntityPlayer.get();
             farmer.addXp(xpByItemFarmer.get(event.getCrafting().getItem()).apply(farmer.level));
         }
+        for (int i = 0; i < event.getInventory().getContainerSize(); i++) {
+            ItemStack itemStack = event.getInventory().getItem(i);
+            if (itemStack.is(ModItems.VACUUM_BACK_PACK.get())) {
+                VacuumBackPack.decreaseSize(itemStack, event.getCrafting().getCount());
+                if (!event.getPlayer().getInventory().add(itemStack)) {
+                    serverLevel.addFreshEntity(event.getPlayer().drop(itemStack, true, false));
+                }
+            }
+        }
     }
 
     @SubscribeEvent
@@ -697,9 +698,28 @@ public class ClientSetup {
             }
         }
     }
+
     @SubscribeEvent
-    public void onUpdateMovement(EntityItemPickupEvent event) {
-        System.err.println("Je récupère des items");
+    public void onPlayerPickupItem(EntityItemPickupEvent event) {
+        Optional<ItemStack> vacuumItemStack = event.getPlayer().getInventory().items.stream().filter(itemStack -> {
+            boolean hasGoodVacuum = false;
+            if (itemStack.is(ModItems.VACUUM_BACK_PACK.get()) && ((VacuumBackPack)itemStack.getItem()).containItem(itemStack, event.getItem().getItem())) {
+                hasGoodVacuum = true;
+            }
+            return hasGoodVacuum;
+        }).findFirst();
+        if (vacuumItemStack.isPresent()) {
+                event.setCanceled(true);
+                ((VacuumBackPack)vacuumItemStack.get().getItem()).addItemToStack(vacuumItemStack.get(), event.getItem().getItem(), serverLevel, event.getPlayer());
+                event.getItem().move(MoverType.PLAYER, event.getPlayer().position());
+                event.getItem().kill();
+            }
+        }
+
+    @SubscribeEvent
+    public static void registerRecipes(final RegistryEvent.Register<RecipeSerializer<?>> event) {
+        event.getRegistry().register(new SimpleRecipeSerializer<>(net.dofmine.minedofmod.data.recipes.vacuum.VacuumBackPack::new).setRegistryName(MinedofMod.MODS_ID, "vacuum_recipe"));
+        event.getRegistry().register(new SimpleRecipeSerializer<>(net.dofmine.minedofmod.data.recipes.vacuum.RevertVacuumBackPack::new).setRegistryName(MinedofMod.MODS_ID, "revert_vacuum_recipe"));
     }
 
 }

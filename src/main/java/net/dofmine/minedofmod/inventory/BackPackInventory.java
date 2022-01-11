@@ -144,7 +144,6 @@ public class BackPackInventory implements Container, Nameable {
      */
     @Override
     public boolean stillValid(Player player) {
-        System.err.println("C'est bon : " + !player.getMainHandItem().getItem().equals(ModItems.BACK_PACK.get()));
         return !player.getMainHandItem().getItem().equals(ModItems.BACK_PACK.get());
     }
 

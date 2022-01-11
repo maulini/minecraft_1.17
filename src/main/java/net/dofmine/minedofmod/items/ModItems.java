@@ -7,6 +7,7 @@ import net.dofmine.minedofmod.block.fluid.ModFluids;
 import net.dofmine.minedofmod.items.armor.ModArmorItem;
 import net.dofmine.minedofmod.items.armor.SpecialBootsArmor;
 import net.dofmine.minedofmod.items.backpack.BackPackItem;
+import net.dofmine.minedofmod.items.backpack.VacuumBackPack;
 import net.dofmine.minedofmod.items.finder.ChunkFinder;
 import net.dofmine.minedofmod.items.key.FlyKeyItem;
 import net.dofmine.minedofmod.items.key.KeyItem;
@@ -52,7 +53,8 @@ public class ModItems {
     public static final RegistryObject<Item> GOLDEN_KEY = ITEMS.register("golden_key", () -> new FlyKeyItem());
     public static final RegistryObject<Item> TELEPORTATE_KEY = ITEMS.register("teleportate_key", () -> new TeleportateKey());
     public static final RegistryObject<Item> COINS = ITEMS.register("coin", () -> new Item(new Item.Properties().tab(ModCreativeTabs.MODS_TABS)));
-    public static final RegistryObject<Item> BACK_PACK = ITEMS.register("back_pack", () -> new BackPackItem(new Item.Properties().tab(ModCreativeTabs.MODS_TABS)));
+    public static final RegistryObject<Item> BACK_PACK = ITEMS.register("backpack", () -> new BackPackItem(new Item.Properties().tab(ModCreativeTabs.MODS_TABS).stacksTo(1)));
+    public static final RegistryObject<Item> VACUUM_BACK_PACK = ITEMS.register("back_pack", () -> new VacuumBackPack(new Item.Properties().tab(ModCreativeTabs.MODS_TABS).stacksTo(1)));
 
     /***********************************************
      ******************* TOOLS *********************
@@ -200,7 +202,7 @@ public class ModItems {
      ******************* FINDER ********************
      ***********************************************/
     public static final RegistryObject<Item> CHUNK_FINDER = ITEMS.register("chunk_finder",
-            () -> new ChunkFinder(new Item.Properties().tab(ModCreativeTabs.MODS_TABS)));
+            () -> new ChunkFinder(new Item.Properties().tab(ModCreativeTabs.MODS_TABS).stacksTo(1)));
 
     /***********************************************
      *************** BUCKET FLUID ******************

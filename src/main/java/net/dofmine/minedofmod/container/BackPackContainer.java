@@ -29,7 +29,7 @@ public class BackPackContainer extends AbstractContainerMenu {
     private final IItemHandler playerInventory;
     private final BackPackInventory backPackInventory;
 
-    public BackPackContainer(int windowId, Player player, ItemStack itemStack, BackPackInventory backPackInventory) {
+    public BackPackContainer(int windowId, Player player, BackPackInventory backPackInventory) {
         super(ModContainer.BACK_PACK_CONTAINER.get(), windowId);
         this.player = player;
         this.playerInventory = new InvWrapper(player.getInventory());

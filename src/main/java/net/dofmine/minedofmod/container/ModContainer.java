@@ -35,7 +35,7 @@ public class ModContainer {
         IForgeContainerType.create(((windowId, inv, data) -> {
             Player player = inv.player;
             ItemStack itemStack = player.getMainHandItem();
-            return new BackPackContainer(windowId, player, itemStack, new BackPackInventory(itemStack, 27));
+            return new BackPackContainer(windowId, player, new BackPackInventory(itemStack, 27));
         })));
 
     public static void register(IEventBus eventBus) {

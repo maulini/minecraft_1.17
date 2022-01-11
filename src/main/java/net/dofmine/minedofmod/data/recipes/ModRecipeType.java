@@ -3,6 +3,7 @@ package net.dofmine.minedofmod.data.recipes;
 import net.dofmine.minedofmod.MinedofMod;
 import net.dofmine.minedofmod.data.recipes.crafting.CraftingRecipe;
 import net.dofmine.minedofmod.data.recipes.lightning.LightningChannelerRecipe;
+import net.dofmine.minedofmod.data.recipes.vacuum.VacuumBackPack;
 import net.minecraft.core.Registry;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
