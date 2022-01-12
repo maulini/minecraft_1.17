@@ -16,6 +16,7 @@ public class JobsScreen extends Screen {
     private final ResourceLocation XP_BARRE = new ResourceLocation(MinedofMod.MODS_ID, "textures/gui/custom_bar/xp_barre.png");
     private final int IMAGE_WIDTH = 75;
     private final int IMAGE_HEIGHT = 6;
+    private static final int WHITE_COLOR = 0xFFFFFFFF;
 
     public JobsScreen(Component p_96550_) {
         super(p_96550_);
@@ -32,11 +33,11 @@ public class JobsScreen extends Screen {
         ExtendedFarmerJobsEntityPlayer farmer = ExtendedFarmerJobsEntityPlayer.get();
         ExtendedWizardJobsEntityPlayer wizard = ExtendedWizardJobsEntityPlayer.get();
         ExtendedLocksmithJobsEntityPlayer locksmith = ExtendedLocksmithJobsEntityPlayer.get();
-        drawString(stack, Minecraft.getInstance().font, String.valueOf(hunter.level), width - 165, 110, 0);
-        drawString(stack, Minecraft.getInstance().font, String.valueOf(miner.level), width / 2 - 70, 110, 0);
-        drawString(stack, Minecraft.getInstance().font, String.valueOf(farmer.level), width - 165, 235, 0);
-        drawString(stack, Minecraft.getInstance().font, String.valueOf(wizard.level), width / 2 - 70, 235, 0);
-        drawString(stack, Minecraft.getInstance().font, String.valueOf(locksmith.level), width / 2, 200, 0);
+        Minecraft.getInstance().font.draw(stack, String.valueOf(hunter.level), width - 165, 110, WHITE_COLOR);
+        Minecraft.getInstance().font.draw(stack, String.valueOf(miner.level), width / 2 - 70, 110, WHITE_COLOR);
+        Minecraft.getInstance().font.draw(stack, String.valueOf(farmer.level), width - 165, 235, WHITE_COLOR);
+        Minecraft.getInstance().font.draw(stack, String.valueOf(wizard.level), width / 2 - 70, 235, WHITE_COLOR);
+        Minecraft.getInstance().font.draw(stack, String.valueOf(locksmith.level), width / 2, 200, WHITE_COLOR);
         addXpFarmer(stack, farmer);
         addXpHunter(stack, hunter);
         addXpMiner(stack, miner);
@@ -75,7 +76,7 @@ public class JobsScreen extends Screen {
     private int getImageWidth(long xp, long maxXp) {
         int percentXp = (int) (xp * 100 / maxXp);
         int value = (percentXp * IMAGE_WIDTH) / 100;
-        return value > IMAGE_WIDTH ? IMAGE_WIDTH : value;
+        return Math.min(value, IMAGE_WIDTH);
     }
 
     @Override
