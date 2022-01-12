@@ -67,7 +67,6 @@ public class BlockList extends ContainerObjectSelectionList<BlockList.Entry> {
         }
 
         public void render(PoseStack stack, int p_97464_, int p_97465_, int p_97466_, int p_97467_, int p_97468_, int p_97469_, int p_97470_, boolean p_97471_, float p_97472_) {
-            //drawString(stack, Minecraft.getInstance().font, name, controlsScreen.width / 4 + 57, p_97465_ + 3, 0);
             Minecraft.getInstance().font.draw(stack, name.getString(), controlsScreen.width / 4 + 57, p_97465_ + 3, 0xFFFFFFFF);
             this.imageButton.x = controlsScreen.width / 4 + 37;
             this.imageButton.y = p_97465_;
