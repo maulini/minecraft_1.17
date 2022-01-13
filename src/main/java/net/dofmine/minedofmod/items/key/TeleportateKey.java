@@ -35,13 +35,12 @@ public class TeleportateKey extends Item {
     @Override
     public InteractionResult useOn(UseOnContext context) {
         Level level = context.getLevel();
-        ItemStack itemStack = context.getPlayer().getItemInHand(InteractionHand.MAIN_HAND);
+        ItemStack itemStack = context.getItemInHand();
         BlockState blockState = level.getBlockState(context.getClickedPos());
         if (blockState.is(ModBlocks.SPECIAL_DOOR.get())) {
             if (dimension == null || !dimension.equalsIgnoreCase(level.dimensionType().effectsLocation().getPath())) {
                 dimension = level.dimensionType().effectsLocation().getPath();
             }
-            if (level.isClientSide) {
                 if (itemStack.hasTag()) {
                     ListTag doors = itemStack.getTag().getList(dimension, Constants.NBT.TAG_COMPOUND);
                     if (!havePosition(doors, context.getClickedPos())) {
@@ -50,11 +49,12 @@ public class TeleportateKey extends Item {
                 }else {
                     addDoorTeleportate(itemStack, context.getClickedPos());
                 }
+            if (level.isClientSide) {
                 Minecraft.getInstance().setScreen(new TeleportateScreen(itemStack, context.getPlayer(), level));
             }
             ((SpecialDoorTeleportate) blockState.getBlock()).openOrCloseDoor(blockState, level, context.getClickedPos(), context.getPlayer());
         }
-        return super.useOn(context);
+        return InteractionResult.sidedSuccess(level.isClientSide);
     }
 
     private boolean havePosition(ListTag doors, BlockPos clickedPos) {
