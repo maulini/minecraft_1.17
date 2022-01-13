@@ -37,7 +37,7 @@ public class SpecialDoorTeleportate extends DoorBlock implements Cloneable {
 
     @Override
     public InteractionResult use(BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, BlockHitResult blockHitResult) {
-            return InteractionResult.PASS;
+        return InteractionResult.PASS;
     }
 
     public void openOrCloseDoor(BlockState blockState, Level level, BlockPos blockPos, Player player) {
