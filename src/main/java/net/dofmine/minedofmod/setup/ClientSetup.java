@@ -10,6 +10,7 @@ import net.dofmine.minedofmod.job.*;
 //import net.dofmine.minedofmod.screen.ChooseSpellScreen;
 import net.dofmine.minedofmod.screen.JobsScreen;
 import net.dofmine.minedofmod.screen.ManaBar;
+import net.dofmine.minedofmod.tileentity.MjollnirModel;
 import net.dofmine.minedofmod.tileentity.Spells;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -33,6 +34,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -720,6 +722,10 @@ public class ClientSetup {
     public static void registerRecipes(final RegistryEvent.Register<RecipeSerializer<?>> event) {
         event.getRegistry().register(new SimpleRecipeSerializer<>(net.dofmine.minedofmod.data.recipes.vacuum.VacuumBackPack::new).setRegistryName(MinedofMod.MODS_ID, "vacuum_recipe"));
         event.getRegistry().register(new SimpleRecipeSerializer<>(net.dofmine.minedofmod.data.recipes.vacuum.RevertVacuumBackPack::new).setRegistryName(MinedofMod.MODS_ID, "revert_vacuum_recipe"));
+    }
+
+    @SubscribeEvent
+    public static void registerModel(ModelRegistryEvent event) {
     }
 
 }

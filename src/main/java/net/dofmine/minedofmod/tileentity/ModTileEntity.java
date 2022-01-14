@@ -17,7 +17,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 public class ModTileEntity {
 
     public static DeferredRegister<BlockEntityType<?>> BLOCK_TILE_ENTITY = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, MinedofMod.MODS_ID);
-    public static DeferredRegister<EntityType<?>> ENTITY = DeferredRegister.create(ForgeRegistries.ENTITIES, MinedofMod.MODS_ID);
 
     public static RegistryObject<BlockEntityType<LightningChannelerTile>> LIGHTNING_CHANNELER_TILE = BLOCK_TILE_ENTITY.register("lightning_channeler", () -> BlockEntityType.Builder.of(
             LightningChannelerTile::new, ModBlocks.LIGHTNING_CHANNELER.get()).build(null));
@@ -27,7 +26,6 @@ public class ModTileEntity {
 
     public static void register(IEventBus event) {
         BLOCK_TILE_ENTITY.register(event);
-        ENTITY.register(event);
     }
 
 }

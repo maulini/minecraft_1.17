@@ -13,7 +13,10 @@ import net.dofmine.minedofmod.job.ExtendedEntityPlayer;
 import net.dofmine.minedofmod.network.Networking;
 import net.dofmine.minedofmod.screen.*;
 import net.dofmine.minedofmod.setup.ClientSetup;
+import net.dofmine.minedofmod.tileentity.MjollnirEntity;
+import net.dofmine.minedofmod.tileentity.ModEntity;
 import net.dofmine.minedofmod.tileentity.ModTileEntity;
+import net.dofmine.minedofmod.tileentity.renderer.MjollnirEntityRenderer;
 import net.dofmine.minedofmod.world.ModWorldType;
 import net.dofmine.minedofmod.world.biome.ModBiomes;
 import net.dofmine.minedofmod.world.dimension.ModDimension;
@@ -21,7 +24,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.ExperienceOrbRenderer;
+import net.minecraft.client.renderer.entity.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -32,6 +35,7 @@ import net.minecraft.world.entity.monster.Ravager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.gui.IIngameOverlay;
@@ -64,6 +68,7 @@ import top.theillusivec4.curios.api.type.ISlotType;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(MinedofMod.MODS_ID)
@@ -85,6 +90,7 @@ public class MinedofMod {
         ModRecipeType.register(modEventBus);
         ModBiomes.register(modEventBus);
         ModFluids.register(modEventBus);
+        ModEntity.register(modEventBus);
         modEventBus.addListener(this::initSprite);
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::enqueueIMC);
@@ -118,6 +124,8 @@ public class MinedofMod {
         ItemBlockRenderTypes.setRenderLayer(ModFluids.STYX.get(), RenderType.translucent());
         ItemBlockRenderTypes.setRenderLayer(ModFluids.STYX_FLOWING.get(), RenderType.translucent());
         ItemBlockRenderTypes.setRenderLayer(ModBlocks.STYX.get(), RenderType.translucent());
+
+        EntityRenderers.register(ModEntity.MJOLLNIR_PROJECTILE.get(), MjollnirEntityRenderer::new);
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event) {

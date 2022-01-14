@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import net.dofmine.minedofmod.items.ModItems;
 import net.dofmine.minedofmod.job.ExtendedEntityPlayer;
+import net.dofmine.minedofmod.tileentity.MjollnirEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -22,6 +23,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.ThrownEnderpearl;
 import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.UseOnContext;
@@ -35,16 +37,13 @@ import net.minecraft.world.phys.Vec3;
 import java.util.List;
 
 public class ThorHammer extends Item implements Vanishable {
-    public static final int THROW_THRESHOLD_TIME = 10;
-    public static final float BASE_DAMAGE = 8.0F;
-    public static final float SHOOT_POWER = 2.5F;
     private final Multimap<Attribute, AttributeModifier> defaultModifiers;
 
     public ThorHammer(Properties p_43381_) {
         super(p_43381_);
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
         builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Tool modifier", 8.0D, AttributeModifier.Operation.ADDITION));
-        builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Tool modifier", (double)-2.9F, AttributeModifier.Operation.ADDITION));
+        builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Tool modifier", (double) -2.9F, AttributeModifier.Operation.ADDITION));
         this.defaultModifiers = builder.build();
     }
 
@@ -58,68 +57,6 @@ public class ThorHammer extends Item implements Vanishable {
 
     public int getUseDuration(ItemStack itemStack) {
         return Integer.MAX_VALUE;
-    }
-
-    public void releaseUsing(ItemStack itemStack, Level level, LivingEntity livingEntity, int p_43397_) {
-        if (livingEntity instanceof Player) {
-            Player player = (Player)livingEntity;
-            int i = this.getUseDuration(itemStack) - p_43397_;
-            if (i >= 10) {
-                int j = EnchantmentHelper.getRiptide(itemStack);
-                if (j <= 0 || player.isInWaterOrRain()) {
-                    if (!level.isClientSide) {
-                        itemStack.hurtAndBreak(1, player, (p_43388_) -> {
-                            p_43388_.broadcastBreakEvent(livingEntity.getUsedItemHand());
-                        });
-                        if (j == 0) {
-                            ThrownTrident throwntrident = new ThrownTrident(level, player, itemStack);
-                            throwntrident.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 2.5F + (float)j * 0.5F, 1.0F);
-                            if (player.getAbilities().instabuild) {
-                                throwntrident.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
-                            }
-
-                            level.addFreshEntity(throwntrident);
-                            level.playSound((Player)null, throwntrident, SoundEvents.TRIDENT_THROW, SoundSource.PLAYERS, 1.0F, 1.0F);
-                            if (!player.getAbilities().instabuild) {
-                                player.getInventory().removeItem(itemStack);
-                            }
-                        }
-                    }
-
-                    player.awardStat(Stats.ITEM_USED.get(this));
-                    if (j > 0) {
-                        float f7 = player.getYRot();
-                        float f = player.getXRot();
-                        float f1 = -Mth.sin(f7 * ((float)Math.PI / 180F)) * Mth.cos(f * ((float)Math.PI / 180F));
-                        float f2 = -Mth.sin(f * ((float)Math.PI / 180F));
-                        float f3 = Mth.cos(f7 * ((float)Math.PI / 180F)) * Mth.cos(f * ((float)Math.PI / 180F));
-                        float f4 = Mth.sqrt(f1 * f1 + f2 * f2 + f3 * f3);
-                        float f5 = 3.0F * ((1.0F + (float)j) / 4.0F);
-                        f1 = f1 * (f5 / f4);
-                        f2 = f2 * (f5 / f4);
-                        f3 = f3 * (f5 / f4);
-                        player.push((double)f1, (double)f2, (double)f3);
-                        player.startAutoSpinAttack(20);
-                        if (player.isOnGround()) {
-                            float f6 = 1.1999999F;
-                            player.move(MoverType.SELF, new Vec3(0.0D, (double)1.1999999F, 0.0D));
-                        }
-
-                        SoundEvent soundevent;
-                        if (j >= 3) {
-                            soundevent = SoundEvents.TRIDENT_RIPTIDE_3;
-                        } else if (j == 2) {
-                            soundevent = SoundEvents.TRIDENT_RIPTIDE_2;
-                        } else {
-                            soundevent = SoundEvents.TRIDENT_RIPTIDE_1;
-                        }
-
-                        level.playSound((Player)null, player, soundevent, SoundSource.PLAYERS, 1.0F, 1.0F);
-                    }
-
-                }
-            }
-        }
     }
 
     @Override
@@ -142,9 +79,17 @@ public class ThorHammer extends Item implements Vanishable {
                 }
                 return InteractionResultHolder.consume(itemstack);
             }else {
-                player.startUsingItem(interactionHand);
-                return InteractionResultHolder.consume(itemstack);
+                MjollnirEntity mjollnirEntity = new MjollnirEntity(player, level,0);
+                mjollnirEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 2.5F + (float)0 * 0.5F, 1.0F);
+                if (player.getAbilities().instabuild) {
+                    mjollnirEntity.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
+                }
+
+                level.addFreshEntity(mjollnirEntity);
+                level.playSound((Player)null, mjollnirEntity, SoundEvents.TRIDENT_THROW, SoundSource.PLAYERS, 1.0F, 1.0F);
+                    player.getInventory().removeItem(itemstack);
             }
+            return InteractionResultHolder.consume(itemstack);
         }
         return InteractionResultHolder.pass(itemstack);
     }
@@ -179,14 +124,6 @@ public class ThorHammer extends Item implements Vanishable {
             }
         }
         return super.useOn(context);
-    }
-
-    @Override
-    public void inventoryTick(ItemStack itemStack, Level level, Entity entity, int p_41407_, boolean p_41408_) {
-        if (!itemStack.isEnchanted()) {
-            itemStack.enchant(Enchantments.LOYALTY, 3);
-        }
-        super.inventoryTick(itemStack, level, entity, p_41407_, p_41408_);
     }
 
     @Override
