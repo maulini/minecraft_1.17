@@ -4,6 +4,7 @@ import net.dofmine.minedofmod.MinedofMod;
 import net.dofmine.minedofmod.block.ModBlocks;
 import net.dofmine.minedofmod.block.custom.ElevatorBlock;
 import net.dofmine.minedofmod.container.BackPackContainer;
+import net.dofmine.minedofmod.items.ModArmorMaterial;
 import net.dofmine.minedofmod.items.ModItems;
 import net.dofmine.minedofmod.items.backpack.VacuumBackPack;
 import net.dofmine.minedofmod.job.*;
@@ -24,6 +25,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.monster.Ravager;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -37,6 +39,7 @@ import net.minecraftforge.client.event.*;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -414,6 +417,7 @@ public class ClientSetup {
 
     @SubscribeEvent
     public static void onRegisterLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(MjollnirModel.LAYER_LOCATION, MjollnirModel::createBodyLayer);
     }
 
     @SubscribeEvent
@@ -723,9 +727,4 @@ public class ClientSetup {
         event.getRegistry().register(new SimpleRecipeSerializer<>(net.dofmine.minedofmod.data.recipes.vacuum.VacuumBackPack::new).setRegistryName(MinedofMod.MODS_ID, "vacuum_recipe"));
         event.getRegistry().register(new SimpleRecipeSerializer<>(net.dofmine.minedofmod.data.recipes.vacuum.RevertVacuumBackPack::new).setRegistryName(MinedofMod.MODS_ID, "revert_vacuum_recipe"));
     }
-
-    @SubscribeEvent
-    public static void registerModel(ModelRegistryEvent event) {
-    }
-
 }

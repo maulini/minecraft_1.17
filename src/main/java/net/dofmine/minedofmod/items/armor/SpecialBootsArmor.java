@@ -32,9 +32,13 @@ public class SpecialBootsArmor extends ArmorItem {
                 if (hasBoots(player)) {
                     ArmorMaterial material = ((ArmorItem) player.getInventory().getArmor(0).getItem()).getMaterial();
                     if (material.equals(ModArmorMaterial.ICE)) {
-                        changeWaterBlock(world, player);
+                        if (player.isCrouching()) {
+                            changeWaterBlock(world, player);
+                        }
                     }else if (material.equals(ModArmorMaterial.LAVA)) {
-                        changeLavaBlock(world, player);
+                        if (player.isCrouching()) {
+                            changeLavaBlock(world, player);
+                        }
                     }
                 }
             }
@@ -66,8 +70,7 @@ public class SpecialBootsArmor extends ArmorItem {
                 for (int z = -2; z < 2; z++) {
                     BlockPos blockPos = new BlockPos(player.getBlockX() + x, player.getBlockY() + y, player.getBlockZ() + z);
                     if (world.getBlockState(blockPos).getBlock().equals(Blocks.WATER) || world.getBlockState(blockPos).getBlock().equals(Blocks.WATER_CAULDRON)) {
-                        boolean randomBol = player.getRandom().nextBoolean();
-                        if (randomBol) {
+                        if (player.getRandom().nextBoolean()) {
                             world.setBlockAndUpdate(blockPos, Blocks.ICE.defaultBlockState());
                         } else {
                             world.setBlockAndUpdate(blockPos, Blocks.PACKED_ICE.defaultBlockState());

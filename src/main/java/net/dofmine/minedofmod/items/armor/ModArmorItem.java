@@ -28,6 +28,7 @@ public class ModArmorItem extends ArmorItem {
             (new ImmutableMap.Builder<ArmorMaterial, List<MobEffect>>())
                     .put(ModArmorMaterial.TITANIUM, Arrays.asList(MobEffects.LUCK))
                     .put(ModArmorMaterial.GOD, Arrays.asList(MobEffects.ABSORPTION, MobEffects.FIRE_RESISTANCE, MobEffects.DAMAGE_RESISTANCE, MobEffects.DAMAGE_BOOST, MobEffects.JUMP))
+                    .put(ModArmorMaterial.DARK, Arrays.asList(MobEffects.ABSORPTION, MobEffects.FIRE_RESISTANCE, MobEffects.DAMAGE_RESISTANCE, MobEffects.DAMAGE_BOOST))
                     .build();
     private static final Map<ArmorMaterial, Integer> MATERIAL_TO_LEVEL_EQUIP =
             (new ImmutableMap.Builder<ArmorMaterial, Integer>())
@@ -52,7 +53,8 @@ public class ModArmorItem extends ArmorItem {
                     evaluateArmorEffects(player);
                 }
                 if (hasBoots(player)) {
-                    if (((ArmorItem)player.getInventory().getArmor(0).getItem()).getMaterial().equals(ModArmorMaterial.GOD)) {
+                    if (((ArmorItem)player.getInventory().getArmor(0).getItem()).getMaterial().equals(ModArmorMaterial.GOD)
+                    && player.isCrouching()) {
                         changeWaterBlock(world, player);
                         changeLavaBlock(world, player);
                     }
