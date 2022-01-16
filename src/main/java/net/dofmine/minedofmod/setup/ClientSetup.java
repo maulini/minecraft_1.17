@@ -4,11 +4,13 @@ import net.dofmine.minedofmod.MinedofMod;
 import net.dofmine.minedofmod.block.ModBlocks;
 import net.dofmine.minedofmod.block.custom.ElevatorBlock;
 import net.dofmine.minedofmod.container.BackPackContainer;
+import net.dofmine.minedofmod.effects.ModEffect;
 import net.dofmine.minedofmod.items.ModArmorMaterial;
 import net.dofmine.minedofmod.items.ModItems;
 import net.dofmine.minedofmod.items.backpack.VacuumBackPack;
 import net.dofmine.minedofmod.job.*;
 //import net.dofmine.minedofmod.screen.ChooseSpellScreen;
+import net.dofmine.minedofmod.screen.HydrationBar;
 import net.dofmine.minedofmod.screen.JobsScreen;
 import net.dofmine.minedofmod.screen.ManaBar;
 import net.dofmine.minedofmod.tileentity.MjollnirModel;
@@ -20,6 +22,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
@@ -42,6 +45,7 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.*;
 import net.minecraftforge.event.world.BlockEvent;
@@ -73,7 +77,6 @@ public class ClientSetup {
     public static KeyMapping spell2;
     public static KeyMapping spell3;
 
-    private float addMana = 0f;
     private boolean canTeleportate = true;
     private ServerLevel serverLevel;
 
@@ -450,6 +453,7 @@ public class ClientSetup {
             ExtendedLocksmithJobsEntityPlayer.register(player, event);
             ExtendedWizardJobsEntityPlayer.register(player, event);
             ExtendedHunterJobsEntityPlayer.register(player, event);
+            HydrationEntityPlayer.register(player, event);
             new Spells((ServerLevel) player.level);
             this.serverLevel = (ServerLevel) player.level;
         }
@@ -474,6 +478,7 @@ public class ClientSetup {
                 ExtendedLocksmithJobsEntityPlayer.get().deserializeNBT(playerData);
                 ExtendedWizardJobsEntityPlayer.get().deserializeNBT(playerData);
                 ExtendedHunterJobsEntityPlayer.get().deserializeNBT(playerData);
+                HydrationEntityPlayer.get().deserializeNBT(playerData);
             }
 
             ExtendedEntityPlayer.get().sync();
@@ -482,6 +487,7 @@ public class ClientSetup {
             ExtendedLocksmithJobsEntityPlayer.get().sync();
             ExtendedHunterJobsEntityPlayer.get().sync();
             ExtendedWizardJobsEntityPlayer.get().sync();
+            HydrationEntityPlayer.get().sync();
             addUseItem(ModItems.TITANIUM_SWORD.get().getRegistryName(), ExtendedHunterJobsEntityPlayer.class, 2);
             addUseItem(ModItems.TITANIUM_HOE.get().getRegistryName(), ExtendedFarmerJobsEntityPlayer.class, 2);
             addUseItem(ModItems.TITANIUM_PICKAXE.get().getRegistryName(), ExtendedMinerJobsEntityPlayer.class, 2);
@@ -524,12 +530,18 @@ public class ClientSetup {
                 ExtendedHunterJobsEntityPlayer hunter = ExtendedHunterJobsEntityPlayer.get();
                 hunter.addXp(xpByEntityHunter.get(event.getEntity().getType()).apply(hunter.level));
             }
+            if (event.getEntity() instanceof Player) {
+                HydrationEntityPlayer.get().addHydration(20);
+            }
         }
     }
 
     @SubscribeEvent
     public void onRenderGui(RenderGameOverlayEvent.Post event) {
-        new ManaBar(Minecraft.getInstance(), event.getMatrixStack());
+        if (!Minecraft.getInstance().player.isCreative()) {
+            new ManaBar(Minecraft.getInstance(), event.getMatrixStack());
+            new HydrationBar(Minecraft.getInstance(), event.getMatrixStack());
+        }
     }
 
     @SubscribeEvent
@@ -727,4 +739,5 @@ public class ClientSetup {
         event.getRegistry().register(new SimpleRecipeSerializer<>(net.dofmine.minedofmod.data.recipes.vacuum.VacuumBackPack::new).setRegistryName(MinedofMod.MODS_ID, "vacuum_recipe"));
         event.getRegistry().register(new SimpleRecipeSerializer<>(net.dofmine.minedofmod.data.recipes.vacuum.RevertVacuumBackPack::new).setRegistryName(MinedofMod.MODS_ID, "revert_vacuum_recipe"));
     }
+
 }

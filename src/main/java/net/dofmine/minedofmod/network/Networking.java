@@ -1,6 +1,7 @@
 package net.dofmine.minedofmod.network;
 
 import net.dofmine.minedofmod.MinedofMod;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.fmllegacy.network.NetworkDirection;
@@ -57,6 +58,12 @@ public class Networking {
                 .decoder(PacketWizardJobs::decode)
                 .consumer(PacketWizardJobs::handle)
                 .add();
+
+        INSTANCE.messageBuilder(PacketHydration.class, nextID())
+                .encoder(PacketHydration::encode)
+                .decoder(PacketHydration::decode)
+                .consumer(PacketHydration::handle)
+                .add();
     }
 
     public static void sendToClient(Object packet, ServerPlayer player) {
@@ -64,6 +71,8 @@ public class Networking {
     }
 
     public static void sendToServer(Object packet) {
-        INSTANCE.sendToServer(packet);
+        if (Minecraft.getInstance().getConnection() != null) {
+            INSTANCE.sendToServer(packet);
+        }
     }
 }

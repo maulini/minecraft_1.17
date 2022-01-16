@@ -32,7 +32,7 @@ public class ExtendedEntityPlayer implements ICapabilitySerializable {
 
     public ExtendedEntityPlayer(Player player, AttachCapabilitiesEvent attachCapabilitiesEvent) {
         this.player = player;
-        this.mana = 0;
+        this.mana = 100;
         this.maxMana = 100;
         this.attachCapabilitiesEvent = attachCapabilitiesEvent;
         attachCapabilitiesEvent.addCapability(EXT_PROP_NAME, this);
