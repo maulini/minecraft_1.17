@@ -14,7 +14,7 @@ public class DataGenerators {
         DataGenerator generator = event.getGenerator();
 
         generator.addProvider(new ModRecipeProvider(generator));
-        generator.addProvider(new ModLootTableProvider(generator));
+        //generator.addProvider(new ModLootTableProvider(generator));
     }
 
 }

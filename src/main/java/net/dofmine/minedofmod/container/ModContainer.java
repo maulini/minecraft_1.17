@@ -2,6 +2,7 @@ package net.dofmine.minedofmod.container;
 
 import net.dofmine.minedofmod.MinedofMod;
 import net.dofmine.minedofmod.inventory.BackPackInventory;
+import net.dofmine.minedofmod.tileentity.WaterCollectorTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
@@ -30,6 +31,11 @@ public class ModContainer {
             Level level = inv.player.level;
             return new CraftingTableContainer(windowId, level, pos, inv.player, inv);
         })));
+
+    public static final RegistryObject<MenuType<WaterCollectorContainer>> WATER_COLLECTOR_CONTAINER = CONTAINERS.register("water_collector", () ->
+            IForgeContainerType.create(((windowId, inv, data) -> {
+                return new WaterCollectorContainer(windowId, inv);
+            })));
 
     public static final RegistryObject<MenuType<BackPackContainer>> BACK_PACK_CONTAINER = CONTAINERS.register("back_pack", () ->
         IForgeContainerType.create(((windowId, inv, data) -> {

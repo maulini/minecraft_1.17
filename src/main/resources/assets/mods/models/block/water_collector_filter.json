@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top": "mods:block/rain_top",
+    "front": "mods:block/rain_front",
+    "side": "mods:block/rain_side"
+  }
+}

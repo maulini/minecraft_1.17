@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "facing=north,full=false,filter=false": { "model": "mods:block/water_collector" },
+    "facing=south,full=false,filter=false": { "model": "mods:block/water_collector", "y": 180 },
+    "facing=west,full=false,filter=false":  { "model": "mods:block/water_collector", "y": 270 },
+    "facing=east,full=false,filter=false":  { "model": "mods:block/water_collector", "y": 90 },
+    "facing=north,full=false,filter=true": { "model": "mods:block/water_collector_filter" },
+    "facing=south,full=false,filter=true": { "model": "mods:block/water_collector_filter", "y": 180 },
+    "facing=west,full=false,filter=true":  { "model": "mods:block/water_collector_filter", "y": 270 },
+    "facing=east,full=false,filter=true":  { "model": "mods:block/water_collector_filter", "y": 90 },
+    "facing=north,full=true,filter=true": { "model": "mods:block/water_collector_filter_full" },
+    "facing=south,full=true,filter=true": { "model": "mods:block/water_collector_filter_full", "y": 180 },
+    "facing=west,full=true,filter=true":  { "model": "mods:block/water_collector_filter_full", "y": 270 },
+    "facing=east,full=true,filter=true":  { "model": "mods:block/water_collector_filter_full", "y": 90 },
+    "facing=north,full=true,filter=false": { "model": "mods:block/water_collector_filter_full" },
+    "facing=south,full=true,filter=false": { "model": "mods:block/water_collector_full", "y": 180 },
+    "facing=west,full=true,filter=false":  { "model": "mods:block/water_collector_full", "y": 270 },
+    "facing=east,full=true,filter=false":  { "model": "mods:block/water_collector_full", "y": 90 }
+  }
+}

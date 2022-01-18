@@ -4,11 +4,16 @@ import net.dofmine.minedofmod.MinedofMod;
 import net.dofmine.minedofmod.effects.ModEffect;
 import net.dofmine.minedofmod.items.ModArmorMaterial;
 import net.dofmine.minedofmod.job.HydrationEntityPlayer;
+import net.dofmine.minedofmod.tileentity.WaterCollectorTile;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.event.TickEvent;
@@ -53,11 +58,17 @@ public class EventHandler {
 
     @SubscribeEvent
     public static void onPlayerFinishUseItem(LivingEntityUseItemEvent.Finish event) {
-        if (event.getEntity() instanceof Player player) {
+        if (event.getEntity() instanceof Player player && !player.level.isClientSide) {
             ItemStack item = event.getItem();
             if (item.is(Items.MILK_BUCKET)) {
                 HydrationEntityPlayer.get().addHydration(2);
                 player.addEffect(new MobEffectInstance(ModEffect.THIRST.get(), 600, 0));
+            }else if (item.is(Items.POTION)) {
+                Potion potion = PotionUtils.getPotion(item);
+                if (potion.equals(Potions.WATER)) {
+                    HydrationEntityPlayer.get().addHydration(2);
+                    player.addEffect(new MobEffectInstance(ModEffect.THIRST.get(), 600, 0));
+                }
             }
         }
     }

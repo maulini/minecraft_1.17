@@ -4,6 +4,7 @@ import net.dofmine.minedofmod.MinedofMod;
 import net.dofmine.minedofmod.block.custom.*;
 import net.dofmine.minedofmod.block.custom.CraftingTableBlock;
 import net.dofmine.minedofmod.block.fluid.ModFluids;
+import net.dofmine.minedofmod.block.thirst.WaterCollector;
 import net.dofmine.minedofmod.items.ModItems;
 import net.dofmine.minedofmod.setup.ClientSetup;
 import net.dofmine.minedofmod.tabs.ModCreativeTabs;
@@ -170,6 +171,11 @@ public class ModBlocks {
      ************** CUSTOM *************
      ***********************************/
     public static final RegistryObject<Block> ELEVATOR_BLOCK = registerBlock("elevator_block", () -> new ElevatorBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)), null);
+
+    /***********************************
+     ***************THIRST***************
+     ***********************************/
+    public static final RegistryObject<Block> WATER_COLLECTOR = registerBlock("water_collector", () -> new WaterCollector(BlockBehaviour.Properties.of(Material.STONE).strength(3.5F)), null);
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block, Function<Integer, Long> function) {
         RegistryObject<T> toReturn = BLOCKS.register(name, block);

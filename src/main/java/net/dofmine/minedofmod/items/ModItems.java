@@ -8,6 +8,8 @@ import net.dofmine.minedofmod.items.armor.ModArmorItem;
 import net.dofmine.minedofmod.items.armor.SpecialBootsArmor;
 import net.dofmine.minedofmod.items.backpack.BackPackItem;
 import net.dofmine.minedofmod.items.backpack.VacuumBackPack;
+import net.dofmine.minedofmod.items.drink.DrinkItem;
+import net.dofmine.minedofmod.items.drink.FilterItem;
 import net.dofmine.minedofmod.items.finder.ChunkFinder;
 import net.dofmine.minedofmod.items.key.FlyKeyItem;
 import net.dofmine.minedofmod.items.key.KeyItem;
@@ -209,6 +211,14 @@ public class ModItems {
      ***********************************************/
     public static final RegistryObject<Item> STYX_BUCKET = ITEMS.register("styx_bucket",
             () -> new BucketItem(() -> ModFluids.STYX.get(), new Item.Properties().tab(ModCreativeTabs.MODS_TABS).stacksTo(1)));
+
+    /***********************************************
+     *************** ITEM FOR DRINK ****************
+     ***********************************************/
+    public static final RegistryObject<Item> WATER_BOTTLE = ITEMS.register("water_bottle",
+            () -> new DrinkItem(6));
+    public static final RegistryObject<Item> FILTER_WATER = ITEMS.register("filter_water",
+            () -> new FilterItem(100));
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

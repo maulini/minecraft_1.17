@@ -24,6 +24,9 @@ public class ModTileEntity {
     public static RegistryObject<BlockEntityType<CraftingTableTile>> CRAFTING_TABLE_TILE = BLOCK_TILE_ENTITY.register("crafting_table", () -> BlockEntityType.Builder.of(
             CraftingTableTile::new, ModBlocks.CRAFTING_TABLE.get()).build(null));
 
+    public static RegistryObject<BlockEntityType<WaterCollectorTile>> WATER_COLLECTOR_TILE = BLOCK_TILE_ENTITY.register("water_collector", () -> BlockEntityType.Builder.of(
+            WaterCollectorTile::new, ModBlocks.WATER_COLLECTOR.get()).build(null));
+
     public static void register(IEventBus event) {
         BLOCK_TILE_ENTITY.register(event);
     }

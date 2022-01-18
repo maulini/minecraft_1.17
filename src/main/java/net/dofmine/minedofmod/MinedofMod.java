@@ -81,6 +81,7 @@ public class MinedofMod {
             MenuScreens.register(ModContainer.LIGHTNING_CHANNELER_CONTAINER.get(), LightningChannelerScreen::new);
             MenuScreens.register(ModContainer.CRAFTING_TABLE_CONTAINER.get(), CraftingTableScreen::new);
             MenuScreens.register(ModContainer.BACK_PACK_CONTAINER.get(), BackPackScreen::new);
+            MenuScreens.register(ModContainer.WATER_COLLECTOR_CONTAINER.get(), WaterCollectorScreen::new);
         });
         ItemBlockRenderTypes.setRenderLayer(ModBlocks.SPECIAL_DOOR.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(ModBlocks.TOMATO_PLANT.get(), RenderType.cutout());
