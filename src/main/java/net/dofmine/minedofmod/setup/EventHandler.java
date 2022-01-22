@@ -353,12 +353,12 @@ public class EventHandler {
         if (event.getEntity() instanceof Player player && !player.level.isClientSide) {
             ItemStack item = event.getItem();
             if (item.is(Items.MILK_BUCKET)) {
-                HydrationEntityPlayer.get().addHydration(2);
-                player.addEffect(new MobEffectInstance(ModEffect.THIRST.get(), 600, 0));
+                HydrationEntityPlayer.get().addHydration(3);
+                player.addEffect(new MobEffectInstance(ModEffect.THIRST.get(), 300, 0));
             }else if (item.is(Items.POTION)) {
                 Potion potion = PotionUtils.getPotion(item);
                 if (potion.equals(Potions.WATER)) {
-                    HydrationEntityPlayer.get().addHydration(2);
+                    HydrationEntityPlayer.get().addHydration(6);
                     player.addEffect(new MobEffectInstance(ModEffect.THIRST.get(), 600, 0));
                 }
             }

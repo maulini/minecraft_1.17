@@ -35,8 +35,6 @@ public class ClientSetup {
     public static final Map<EntityType<? extends Entity>, Function<Integer, Long>> xpByEntityHunter = new HashMap<>();
     public static final Map<EntityType<? extends Entity>, Integer> canAttackEntity = new HashMap<>();
     public static final Map<ResourceLocation, Map<Class<?>, Integer>> canUseItem = new HashMap<>();
-    //public static final RecipeSerializer<net.dofmine.minedofmod.data.recipes.vacuum.VacuumBackPack> VACUUM_CRAFTING = null;
-    //public static final RecipeSerializer<net.dofmine.minedofmod.data.recipes.vacuum.RevertVacuumBackPack> REVERT_VACUUM_CRAFTING = null;
     public static KeyMapping jobsKey;
     public static KeyMapping chooseSpell;
     public static KeyMapping spell1;
@@ -376,12 +374,6 @@ public class ClientSetup {
     @SubscribeEvent
     public static void onRegisterLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(MjollnirModel.LAYER_LOCATION, MjollnirModel::createBodyLayer);
-    }
-
-    @SubscribeEvent
-    public static void registerRecipes(final RegistryEvent.Register<RecipeSerializer<?>> event) {
-        //event.getRegistry().register(new SimpleRecipeSerializer<>(net.dofmine.minedofmod.data.recipes.vacuum.VacuumBackPack::new).setRegistryName(MinedofMod.MODS_ID, "vacuum_recipe"));
-        //event.getRegistry().register(new SimpleRecipeSerializer<>(net.dofmine.minedofmod.data.recipes.vacuum.RevertVacuumBackPack::new).setRegistryName(MinedofMod.MODS_ID, "revert_vacuum_recipe"));
     }
 
 }

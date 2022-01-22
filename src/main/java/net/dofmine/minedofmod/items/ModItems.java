@@ -206,7 +206,7 @@ public class ModItems {
      *************** ITEM FOR DRINK ****************
      ***********************************************/
     public static final RegistryObject<Item> WATER_BOTTLE = ITEMS.register("water_bottle",
-            () -> new DrinkItem(6));
+            () -> new DrinkItem(8));
     public static final RegistryObject<Item> FILTER_WATER = ITEMS.register("filter_water",
             () -> new FilterItem(100));
 
