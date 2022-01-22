@@ -3,8 +3,7 @@ package net.dofmine.minedofmod.job;
 import net.dofmine.minedofmod.MinedofMod;
 import net.dofmine.minedofmod.network.Networking;
 import net.dofmine.minedofmod.network.PacketHydration;
-import net.dofmine.minedofmod.network.PacketMana;
-import net.dofmine.minedofmod.setup.ClientSetup;
+import net.dofmine.minedofmod.setup.EventHandler;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
@@ -14,12 +13,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.food.FoodData;
-import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.GameRules;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
@@ -61,7 +54,7 @@ public class HydrationEntityPlayer implements ICapabilitySerializable {
 
         properties.put("Hydration", IntTag.valueOf(this.actualHydration));
         properties.put("MaxHydration", IntTag.valueOf(this.maxHydration));
-        ClientSetup.storeEntityData(player.getDisplayName().getString(), properties);
+        EventHandler.storeEntityData(player.getDisplayName().getString(), properties);
         return properties;
     }
 
@@ -81,7 +74,7 @@ public class HydrationEntityPlayer implements ICapabilitySerializable {
     }
 
     public static final HydrationEntityPlayer get() {
-        return (HydrationEntityPlayer) attachCapabilitiesEvent.getCapabilities().get(EXT_PROP_NAME);
+        return attachCapabilitiesEvent == null ? null : (HydrationEntityPlayer) attachCapabilitiesEvent.getCapabilities().get(EXT_PROP_NAME);
     }
 
     private static String getSaveKey(Player player) {
@@ -92,7 +85,7 @@ public class HydrationEntityPlayer implements ICapabilitySerializable {
         PacketHydration packetHydration = new PacketHydration(this.maxHydration, this.actualHydration);
         Networking.sendToServer(packetHydration);
 
-        if (player.level.isClientSide) {
+        if (!player.level.isClientSide) {
             Networking.sendToClient(packetHydration, (ServerPlayer) player);
         }
     }

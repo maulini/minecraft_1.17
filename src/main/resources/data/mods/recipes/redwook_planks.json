@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "mods:redwood_log"
+    }
+  ],
+  "result": {
+    "item": "mods:redwood_planks",
+    "count": 4
+  }
+}

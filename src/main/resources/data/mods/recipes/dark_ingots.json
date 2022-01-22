@@ -1,0 +1,15 @@
+{
+  "type": "mods:lightning",
+  "weather": "thundering",
+  "ingredients": [
+    {
+      "item": "mods:dark_ore"
+    },
+    {
+      "item": "minecraft:coal"
+    }
+  ],
+  "output": {
+    "item": "mods:dark_ingot"
+  }
+}

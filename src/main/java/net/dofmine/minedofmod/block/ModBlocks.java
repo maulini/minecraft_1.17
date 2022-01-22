@@ -23,12 +23,16 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
-import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -36,6 +40,7 @@ import java.util.function.Supplier;
 public class ModBlocks {
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MinedofMod.MODS_ID);
+    public static final Map<Block, Function<Integer, Long>> registerFunction = new HashMap<>();
 
     /***********************************
      ***************BLOCK***************
@@ -50,8 +55,8 @@ public class ModBlocks {
      ***********************************/
     public static final RegistryObject<Block> LIGHTNING_CHANNELER = registerBlock("lightning_channeler", () -> new LightningChannelerBlock(BlockBehaviour.Properties.of(Material.METAL)), null);
     public static final RegistryObject<Block> CRAFTING_TABLE = registerBlock("crafting_table", () -> new CraftingTableBlock(BlockBehaviour.Properties.of(Material.WOOD)), null);
-    public static final RegistryObject<Block> SPECIAL_DOOR = registerBlock("special_door", () -> new SpecialDoorTeleportate(), null);
-    public static final RegistryObject<Block> GLOBE = registerBlock("globe", () -> new GlobeBlock(), null);
+    public static final RegistryObject<Block> SPECIAL_DOOR = registerBlock("special_door", SpecialDoorTeleportate::new, null);
+    public static final RegistryObject<Block> GLOBE = registerBlock("globe", GlobeBlock::new, null);
 
     /***********************************
      **************ORE BLOCK************
@@ -187,7 +192,7 @@ public class ModBlocks {
         ModItems.ITEMS.register(name, () -> {
             T realBlock = block.get();
             if (function != null) {
-                ClientSetup.addBlocks(realBlock, function);
+                registerFunction.put(realBlock, function);
             }
             return new BlockItem(realBlock, new Item.Properties().tab(ModCreativeTabs.MODS_TABS));
         });

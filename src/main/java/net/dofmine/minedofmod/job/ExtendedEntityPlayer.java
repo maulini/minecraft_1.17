@@ -4,6 +4,7 @@ import net.dofmine.minedofmod.MinedofMod;
 import net.dofmine.minedofmod.network.Networking;
 import net.dofmine.minedofmod.network.PacketMana;
 import net.dofmine.minedofmod.setup.ClientSetup;
+import net.dofmine.minedofmod.setup.EventHandler;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
@@ -50,7 +51,7 @@ public class ExtendedEntityPlayer implements ICapabilitySerializable {
 
         properties.put("Mana", IntTag.valueOf(this.mana));
         properties.put("MaxMana", IntTag.valueOf(this.maxMana));
-        ClientSetup.storeEntityData(player.getDisplayName().getString(), properties);
+        EventHandler.storeEntityData(player.getDisplayName().getString(), properties);
         return properties;
     }
 
@@ -66,7 +67,7 @@ public class ExtendedEntityPlayer implements ICapabilitySerializable {
     }
 
     public static final ExtendedEntityPlayer get() {
-        return (ExtendedEntityPlayer) attachCapabilitiesEvent.getCapabilities().get(EXT_PROP_NAME);
+        return attachCapabilitiesEvent == null ? null : (ExtendedEntityPlayer)attachCapabilitiesEvent.getCapabilities().get(EXT_PROP_NAME);
     }
 
     private static String getSaveKey(Player player) {
@@ -77,7 +78,7 @@ public class ExtendedEntityPlayer implements ICapabilitySerializable {
         PacketMana packetMoney = new PacketMana(this.maxMana, this.mana);
         Networking.sendToServer(packetMoney);
 
-        if (player.level.isClientSide) {
+        if (!player.level.isClientSide) {
             Networking.sendToClient(packetMoney, (ServerPlayer) player);
         }
     }

@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "item": "mods:ruby_ore"
+  },
+  "result": "mods:rubis_ingot",
+  "experience": 0.35,
+  "cookingtime": 200
+}

@@ -1,0 +1,16 @@
+{
+  "type": "mods:craft",
+  "pattern": [
+    "#  #",
+    "#  #",
+    "#  #"
+  ],
+  "key": {
+    "#": {
+      "item": "mods:rubis_ingot"
+    }
+  },
+  "result": {
+    "item": "mods:ruby_boots"
+  }
+}

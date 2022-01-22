@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "item": "mods:lapis_ore"
+  },
+  "result": "mods:lapis_ingot",
+  "experience": 0.35,
+  "cookingtime": 200
+}

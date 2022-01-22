@@ -1,5 +1,7 @@
 package net.dofmine.minedofmod.data.recipes.vacuum;
 
+import net.dofmine.minedofmod.data.recipes.ModRecipeType;
+import net.dofmine.minedofmod.data.recipes.crafting.CraftingRecipe;
 import net.dofmine.minedofmod.items.ModItems;
 import net.dofmine.minedofmod.setup.ClientSetup;
 import net.minecraft.resources.ResourceLocation;
@@ -10,8 +12,11 @@ import net.minecraft.world.level.Level;
 
 public class VacuumBackPack extends CustomRecipe {
 
+    public static ResourceLocation resourceLocation;
+
     public VacuumBackPack(ResourceLocation res) {
         super(res);
+        VacuumBackPack.resourceLocation = res;
     }
 
     @Override
@@ -50,7 +55,13 @@ public class VacuumBackPack extends CustomRecipe {
     }
 
     public RecipeSerializer<?> getSerializer() {
-        return ClientSetup.VACUUM_CRAFTING;
+        return ModRecipeType.VACUUM_SERIALIZER_RECIPE.get();
     }
 
+    public static class VacuumRecipeType implements RecipeType<VacuumBackPack> {
+        @Override
+        public String toString() {
+            return VacuumBackPack.resourceLocation.toString();
+        }
+    }
 }

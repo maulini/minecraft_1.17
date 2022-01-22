@@ -1,0 +1,16 @@
+{
+  "type": "mods:craft",
+  "pattern": [
+    "#  #",
+    "#  #",
+    "#  #"
+  ],
+  "key": {
+    "#": {
+      "item": "mods:titanium_ingot"
+    }
+  },
+  "result": {
+    "item": "mods:titanium_boots"
+  }
+}

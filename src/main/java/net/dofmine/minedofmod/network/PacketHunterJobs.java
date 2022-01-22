@@ -2,7 +2,7 @@ package net.dofmine.minedofmod.network;
 
 import net.dofmine.minedofmod.job.ExtendedHunterJobsEntityPlayer;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 

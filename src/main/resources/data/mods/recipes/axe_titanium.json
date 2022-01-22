@@ -1,0 +1,20 @@
+{
+  "type": "mods:craft",
+  "pattern": [
+    " ###",
+    " ###",
+    " KK ",
+    " K  "
+  ],
+  "key": {
+    "#": {
+      "item": "mods:titanium_ingot"
+    },
+    "K": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "item": "mods:titanium_axe"
+  }
+}

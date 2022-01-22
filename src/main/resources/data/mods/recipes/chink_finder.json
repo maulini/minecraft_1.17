@@ -1,0 +1,15 @@
+{
+  "type": "mods:lightning",
+  "weather": "thundering",
+  "ingredients": [
+    {
+      "item": "minecraft:nether_star"
+    },
+    {
+      "item": "mods:god_ingot"
+    }
+  ],
+  "output": {
+    "item": "mods:chunk_finder"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "mods:ruby_block"
+    }
+  ],
+  "result": {
+    "item": "mods:rubis_ingot",
+    "count": 16
+  }
+}

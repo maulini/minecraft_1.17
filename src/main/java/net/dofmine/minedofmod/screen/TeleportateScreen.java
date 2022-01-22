@@ -1,39 +1,33 @@
 package net.dofmine.minedofmod.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.dofmine.minedofmod.MinedofMod;
-import net.dofmine.minedofmod.items.ModItems;
 import net.dofmine.minedofmod.items.key.TeleportateKey;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
 
+@OnlyIn(Dist.CLIENT)
 public class TeleportateScreen extends Screen {
 
-    private final ResourceLocation GUI = new ResourceLocation(MinedofMod.MODS_ID, "textures/gui/teleport_gui.png");
     public final TeleportateKey teleportateKey;
     private final Player player;
-    private final Level level;
     public final ItemStack teleportateKeyStack;
     public final List<BlockPos> blockPosList;
     private TeleportateList teleportateList;
 
-    public TeleportateScreen(ItemStack teleportateKey, Player player, Level level) {
+    public TeleportateScreen(ItemStack teleportateKey, Player player) {
         super(new TranslatableComponent("teleporte.title"));
         this.teleportateKeyStack = teleportateKey;
         this.teleportateKey = (TeleportateKey) teleportateKey.getItem();
         minecraft = Minecraft.getInstance();
         this.player = player;
-        this.level = level;
         this.blockPosList = this.teleportateKey.getBlockPositions(teleportateKey);
     }
 

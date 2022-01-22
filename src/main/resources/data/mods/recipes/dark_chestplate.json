@@ -1,0 +1,17 @@
+{
+  "type": "mods:craft",
+  "pattern": [
+    "#  #",
+    "####",
+    "####",
+    "####"
+  ],
+  "key": {
+    "#": {
+      "item": "mods:dark_ingot"
+    }
+  },
+  "result": {
+    "item": "mods:dark_chestplate"
+  }
+}

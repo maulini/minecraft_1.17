@@ -1,9 +1,8 @@
 package net.dofmine.minedofmod.network;
 
 import net.dofmine.minedofmod.job.ExtendedFarmerJobsEntityPlayer;
-import net.dofmine.minedofmod.job.ExtendedHunterJobsEntityPlayer;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -14,9 +13,9 @@ public class PacketFarmerJobs {
     private static long maxXp;
 
     public PacketFarmerJobs(long xp, int level, long maxXp) {
-        this.xp = xp;
-        this.level = level;
-        this.maxXp = maxXp;
+        PacketFarmerJobs.xp = xp;
+        PacketFarmerJobs.level = level;
+        PacketFarmerJobs.maxXp = maxXp;
     }
 
     public PacketFarmerJobs() {
@@ -33,9 +32,9 @@ public class PacketFarmerJobs {
     }
 
     public static void encode(PacketFarmerJobs packetHunterJobs, FriendlyByteBuf friendlyByteBuf) {
-        friendlyByteBuf.writeLong(packetHunterJobs.xp);
-        friendlyByteBuf.writeInt(packetHunterJobs.level);
-        friendlyByteBuf.writeLong(packetHunterJobs.maxXp);
+        friendlyByteBuf.writeLong(xp);
+        friendlyByteBuf.writeInt(level);
+        friendlyByteBuf.writeLong(maxXp);
     }
 
     public static PacketFarmerJobs decode(FriendlyByteBuf friendlyByteBuf) {

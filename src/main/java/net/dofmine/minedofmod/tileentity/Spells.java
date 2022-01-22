@@ -5,17 +5,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.entity.EntityTypeTest;
 
 import java.util.List;
 
 public class Spells {
 
-    private static ServerLevel serverLevel;
-
-    public Spells(ServerLevel serverLevel) {
-        this.serverLevel = serverLevel;
-    }
+    public static ServerLevel serverLevel;
 
     public static void thunderBolt() {
         List<? extends Entity> entities = serverLevel.getEntitiesOfClass(Entity.class, Minecraft.getInstance().player.getBoundingBox().expandTowards(5.0d, 5.0d, 5.0d), entity -> !(entity instanceof Player));

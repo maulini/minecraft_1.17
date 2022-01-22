@@ -1,0 +1,15 @@
+{
+  "type": "mods:lightning",
+  "weather": "rain",
+  "ingredients": [
+    {
+      "item": "mods:stone_key"
+    },
+    {
+      "item": "minecraft:lava_bucket"
+    }
+  ],
+  "output": {
+    "item": "mods:red_key"
+  }
+}

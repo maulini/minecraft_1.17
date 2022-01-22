@@ -1,0 +1,17 @@
+{
+  "type": "mods:craft",
+  "pattern": [
+    "####",
+    "#  #",
+    "#  #",
+    "#  #"
+  ],
+  "key": {
+    "#": {
+      "item": "mods:god_ingot"
+    }
+  },
+  "result": {
+    "item": "mods:god_leggings"
+  }
+}

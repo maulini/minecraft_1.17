@@ -1,6 +1,7 @@
 package net.dofmine.minedofmod.container;
 
 import net.dofmine.minedofmod.items.drink.FilterItem;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -8,6 +9,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+
+import java.util.UUID;
 
 public class WaterCollectorContainer extends AbstractContainerMenu {
     private final Container waterCollector;

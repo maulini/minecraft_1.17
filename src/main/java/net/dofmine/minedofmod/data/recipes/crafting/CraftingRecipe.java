@@ -7,7 +7,6 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -92,7 +91,7 @@ public class CraftingRecipe implements ICraftingRecipe {
         @Nullable
         @Override
         public CraftingRecipe fromNetwork(ResourceLocation resourceLocation, FriendlyByteBuf byteBuf) {
-            NonNullList<Ingredient> inputs = NonNullList.withSize(17, Ingredient.EMPTY);
+            NonNullList<Ingredient> inputs = NonNullList.withSize(byteBuf.readInt(), Ingredient.EMPTY);
 
             for (int i = 0; i < inputs.size(); i++) {
                 inputs.set(i, Ingredient.fromNetwork(byteBuf));

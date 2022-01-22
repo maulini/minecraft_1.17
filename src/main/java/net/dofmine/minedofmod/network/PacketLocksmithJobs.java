@@ -1,9 +1,8 @@
 package net.dofmine.minedofmod.network;
 
 import net.dofmine.minedofmod.job.ExtendedLocksmithJobsEntityPlayer;
-import net.dofmine.minedofmod.job.ExtendedMinerJobsEntityPlayer;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 

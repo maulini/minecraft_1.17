@@ -1,0 +1,15 @@
+{
+  "type": "mods:lightning",
+  "weather": "clear",
+  "ingredients": [
+    {
+      "item": "mods:stone_key"
+    },
+    {
+      "item": "minecraft:ender_pearl"
+    }
+  ],
+  "output": {
+    "item": "mods:teleportate_key"
+  }
+}

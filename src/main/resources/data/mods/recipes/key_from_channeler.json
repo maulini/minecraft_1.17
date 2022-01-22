@@ -6,10 +6,10 @@
       "item": "minecraft:glass_pane"
     },
     {
-      "item": "mods:raw_titanium"
+      "item": "minecraft:stone"
     }
   ],
   "output": {
-    "item": "mods:basic_key"
+    "item": "mods:stone_key"
   }
 }

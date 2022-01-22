@@ -9,8 +9,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.registries.RegistryObject;
 
 public class ModBlockLootTables extends BlockLoot {
 
@@ -34,7 +33,10 @@ public class ModBlockLootTables extends BlockLoot {
 
         this.dropSelf(ModBlocks.LIGHTNING_CHANNELER.get());
         this.dropSelf(ModBlocks.CRAFTING_TABLE.get());
+        this.dropSelf(ModBlocks.WATER_COLLECTOR.get());
+        this.dropSelf(ModBlocks.ELEVATOR_BLOCK.get());
         this.dropSelf(ModBlocks.SPECIAL_DOOR.get());
+        this.dropSelf(ModBlocks.GLOBE.get());
         this.dropSelf(ModBlocks.ORCHID.get());
         this.dropSelf(ModBlocks.REDWOOD_LOG.get());
         this.dropSelf(ModBlocks.REDWOOD_PLANKS.get());
@@ -42,7 +44,7 @@ public class ModBlockLootTables extends BlockLoot {
         this.dropSelf(ModBlocks.STRIPPED_REDWOOD_LOG.get());
         this.dropSelf(ModBlocks.STRIPPED_REDWOOD_WOOD.get());
         this.dropSelf(ModBlocks.REDWOOD_SAPLING.get());
-
+        this.add(ModBlocks.TELEPORTER_BLOCK.get(), noDrop());
         this.dropSelf(ModBlocks.TITANIUM_BLOCK.get());
         this.dropSelf(ModBlocks.DARK_BLOCK.get());
         this.dropSelf(ModBlocks.RUBY_BLOCK.get());

@@ -112,7 +112,7 @@ public class LightningChannelerRecipe implements ILightningChannelerRecipe {
         @Nullable
         @Override
         public LightningChannelerRecipe fromNetwork(ResourceLocation resourceLocation, FriendlyByteBuf byteBuf) {
-            NonNullList<Ingredient> inputs = NonNullList.withSize(2, Ingredient.EMPTY);
+            NonNullList<Ingredient> inputs = NonNullList.withSize(byteBuf.readInt(), Ingredient.EMPTY);
 
             for (int i = 0; i < inputs.size(); i++) {
                 inputs.set(i, Ingredient.fromNetwork(byteBuf));

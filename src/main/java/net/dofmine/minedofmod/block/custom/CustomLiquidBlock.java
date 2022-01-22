@@ -43,15 +43,12 @@ public class CustomLiquidBlock extends LiquidBlock {
     public static final VoxelShape STABLE_SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 8.0D, 16.0D);
     public static final ImmutableList<Direction> POSSIBLE_FLOW_DIRECTIONS = ImmutableList.of(Direction.DOWN, Direction.SOUTH, Direction.NORTH, Direction.EAST, Direction.WEST);
 
-    /**
-     * @param supplier A fluid supplier such as {@link net.minecraftforge.fmllegacy.RegistryObject<Fluid>}
-     */
-    public CustomLiquidBlock(java.util.function.Supplier<? extends FlowingFluid> p_54694_, BlockBehaviour.Properties p_54695_) {
-        super(p_54694_, p_54695_);
+    public CustomLiquidBlock(java.util.function.Supplier<? extends FlowingFluid> supplier, BlockBehaviour.Properties p_54695_) {
+        super(supplier, p_54695_);
         this.fluid = null;
         this.stateCache = Lists.newArrayList();
         this.registerDefaultState(this.stateDefinition.any().setValue(LEVEL, Integer.valueOf(0)));
-        this.supplier = p_54694_;
+        this.supplier = supplier;
     }
 
     public VoxelShape getCollisionShape(BlockState p_54760_, BlockGetter p_54761_, BlockPos p_54762_, CollisionContext p_54763_) {
@@ -98,21 +95,21 @@ public class CustomLiquidBlock extends LiquidBlock {
 
     public void onPlace(BlockState p_54754_, Level p_54755_, BlockPos p_54756_, BlockState p_54757_, boolean p_54758_) {
         if (this.shouldSpreadLiquid(p_54755_, p_54756_, p_54754_)) {
-            p_54755_.getLiquidTicks().scheduleTick(p_54756_, p_54754_.getFluidState().getType(), this.getFluid().getTickDelay(p_54755_));
+            p_54755_.scheduleTick(p_54756_, p_54754_.getFluidState().getType(), this.getFluid().getTickDelay(p_54755_));
         }
 
     }
 
     public BlockState updateShape(BlockState p_54723_, Direction p_54724_, BlockState p_54725_, LevelAccessor p_54726_, BlockPos p_54727_, BlockPos p_54728_) {
         if (p_54723_.getFluidState().isSource() || p_54725_.getFluidState().isSource()) {
-            p_54726_.getLiquidTicks().scheduleTick(p_54727_, p_54723_.getFluidState().getType(), this.getFluid().getTickDelay(p_54726_));
+            p_54726_.scheduleTick(p_54727_, p_54723_.getFluidState().getType(), this.getFluid().getTickDelay(p_54726_));
         }
         return p_54723_;
     }
 
     public void neighborChanged(BlockState p_54709_, Level p_54710_, BlockPos p_54711_, Block p_54712_, BlockPos p_54713_, boolean p_54714_) {
         if (this.shouldSpreadLiquid(p_54710_, p_54711_, p_54709_)) {
-            p_54710_.getLiquidTicks().scheduleTick(p_54711_, p_54709_.getFluidState().getType(), this.getFluid().getTickDelay(p_54710_));
+            p_54710_.scheduleTick(p_54711_, p_54709_.getFluidState().getType(), this.getFluid().getTickDelay(p_54710_));
         }
 
     }

@@ -1,6 +1,5 @@
 package net.dofmine.minedofmod.items;
 
-import com.google.common.collect.ImmutableMap;
 import net.dofmine.minedofmod.MinedofMod;
 import net.dofmine.minedofmod.block.ModBlocks;
 import net.dofmine.minedofmod.block.fluid.ModFluids;
@@ -17,24 +16,15 @@ import net.dofmine.minedofmod.items.key.StrengKeyItem;
 import net.dofmine.minedofmod.items.key.TeleportateKey;
 import net.dofmine.minedofmod.items.tools.*;
 import net.dofmine.minedofmod.items.weapon.ThorHammer;
-import net.dofmine.minedofmod.job.ExtendedFarmerJobsEntityPlayer;
-import net.dofmine.minedofmod.job.ExtendedHunterJobsEntityPlayer;
-import net.dofmine.minedofmod.job.ExtendedLocksmithJobsEntityPlayer;
-import net.dofmine.minedofmod.job.ExtendedMinerJobsEntityPlayer;
-import net.dofmine.minedofmod.setup.ClientSetup;
 import net.dofmine.minedofmod.tabs.ModCreativeTabs;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-
-import java.util.Map;
-import java.util.UUID;
+import net.minecraftforge.registries.RegistryObject;
 
 public class ModItems {
 
@@ -50,10 +40,10 @@ public class ModItems {
     public static final RegistryObject<Item> RED_KEY = ITEMS.register("red_key", () -> new KeyItem(Blocks.LAVA));
     public static final RegistryObject<Item> WATER_KEY = ITEMS.register("water_key", () -> new KeyItem(Blocks.WATER));
     public static final RegistryObject<Item> STONE_KEY = ITEMS.register("stone_key", () -> new KeyItem(Blocks.STONE));
-    public static final RegistryObject<Item> BASIC_KEY = ITEMS.register("basic_key", () -> new StrengKeyItem());
+    public static final RegistryObject<Item> BASIC_KEY = ITEMS.register("basic_key", StrengKeyItem::new);
     public static final RegistryObject<Item> DARK_KEY = ITEMS.register("dark_key", () -> new KeyItem(Blocks.STRIPPED_DARK_OAK_LOG));
-    public static final RegistryObject<Item> GOLDEN_KEY = ITEMS.register("golden_key", () -> new FlyKeyItem());
-    public static final RegistryObject<Item> TELEPORTATE_KEY = ITEMS.register("teleportate_key", () -> new TeleportateKey());
+    public static final RegistryObject<Item> GOLDEN_KEY = ITEMS.register("golden_key", FlyKeyItem::new);
+    public static final RegistryObject<Item> TELEPORTATE_KEY = ITEMS.register("teleportate_key", TeleportateKey::new);
     public static final RegistryObject<Item> COINS = ITEMS.register("coin", () -> new Item(new Item.Properties().tab(ModCreativeTabs.MODS_TABS)));
     public static final RegistryObject<Item> BACK_PACK = ITEMS.register("backpack", () -> new BackPackItem(new Item.Properties().tab(ModCreativeTabs.MODS_TABS).stacksTo(1)));
     public static final RegistryObject<Item> VACUUM_BACK_PACK = ITEMS.register("back_pack", () -> new VacuumBackPack(new Item.Properties().tab(ModCreativeTabs.MODS_TABS).stacksTo(1)));
@@ -210,7 +200,7 @@ public class ModItems {
      *************** BUCKET FLUID ******************
      ***********************************************/
     public static final RegistryObject<Item> STYX_BUCKET = ITEMS.register("styx_bucket",
-            () -> new BucketItem(() -> ModFluids.STYX.get(), new Item.Properties().tab(ModCreativeTabs.MODS_TABS).stacksTo(1)));
+            () -> new BucketItem(ModFluids.STYX, new Item.Properties().tab(ModCreativeTabs.MODS_TABS).stacksTo(1)));
 
     /***********************************************
      *************** ITEM FOR DRINK ****************

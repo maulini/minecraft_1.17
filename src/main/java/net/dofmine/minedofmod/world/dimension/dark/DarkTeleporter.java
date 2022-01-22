@@ -1,6 +1,5 @@
 package net.dofmine.minedofmod.world.dimension.dark;
-import net.dofmine.minedofmod.block.ModBlocks;
-import net.dofmine.minedofmod.block.custom.CraftingTableBlock;
+
 import net.dofmine.minedofmod.block.custom.TeleporterBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;

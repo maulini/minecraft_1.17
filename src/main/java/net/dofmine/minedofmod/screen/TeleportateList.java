@@ -20,9 +20,11 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
 
+@OnlyIn(Dist.CLIENT)
 public class TeleportateList extends ContainerObjectSelectionList<TeleportateList.Entry> {
 
     private final ResourceLocation GUI = new ResourceLocation(MinedofMod.MODS_ID, "textures/gui/teleport_gui_extended.png");
+    @OnlyIn(Dist.CLIENT)
     final TeleportateScreen teleportateScreen;
 
     public TeleportateList(TeleportateScreen p_97399_, Minecraft p_97400_, Player player) {

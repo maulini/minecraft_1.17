@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###",
+    "#H#",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:stone"
+    },
+    "H": {
+      "item": "minecraft:hopper"
+    }
+  },
+  "result": {
+    "item": "mods:water_collector",
+    "count": 1
+  }
+}

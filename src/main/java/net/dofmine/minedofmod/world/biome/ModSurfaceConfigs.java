@@ -1,4 +1,4 @@
-package net.dofmine.minedofmod.world.biome;
+/*package net.dofmine.minedofmod.world.biome;
 
 import net.dofmine.minedofmod.MinedofMod;
 import net.dofmine.minedofmod.block.ModBlocks;
@@ -25,3 +25,4 @@ public class ModSurfaceConfigs {
                 new ResourceLocation(MinedofMod.MODS_ID, name), surfaceBuilder);
     }
 }
+*/

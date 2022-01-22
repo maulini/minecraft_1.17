@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "item": "mods:cobble_dark"
+  },
+  "result": "mods:stone_dark",
+  "experience": 0.35,
+  "cookingtime": 200
+}

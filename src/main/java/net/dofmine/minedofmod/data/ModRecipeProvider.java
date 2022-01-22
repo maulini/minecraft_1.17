@@ -27,6 +27,5 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 
     @Override
     protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
-        SimpleCookingRecipeBuilder.smelting(Ingredient.of(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER)), ModItems.WATER_BOTTLE.get(), 2.0F, 200).unlockedBy("has_potion", has(Items.POTION)).save(consumer);
     }
 }

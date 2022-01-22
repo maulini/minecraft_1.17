@@ -1,15 +1,8 @@
 package net.dofmine.minedofmod.network;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
 import net.dofmine.minedofmod.job.ExtendedEntityPlayer;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 

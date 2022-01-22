@@ -29,7 +29,7 @@ public class WaterCollectorTile  extends BaseContainerBlockEntity implements Wor
 
     public static final int FILTER_DURATION = 400;
     public static final int MAX_WATER = 100;
-    public static final int TICK_TO_FILL_WATER_MAX = 500;
+    public static final int TICK_TO_FILL_WATER_MAX = 250;
     private static final int[] SLOTS_FOR_UP = new int[]{1};
     private static final int[] SLOTS_FOR_DOWN = new int[]{2, 0};
     private static final int[] SLOTS_FOR_SIDES = new int[]{0};
@@ -119,13 +119,13 @@ public class WaterCollectorTile  extends BaseContainerBlockEntity implements Wor
     }
 
     @Override
-    public CompoundTag save(CompoundTag p_58888_) {
-        ContainerHelper.saveAllItems(p_58888_, this.items);
-        p_58888_.putInt("actualWater", actualWater);
-        p_58888_.putInt("filterProgress", filterProgress);
-        p_58888_.putInt("nbFilter", nbFilter);
-        p_58888_.putInt("tickToFill", tickToFillWater);
-        return super.save(p_58888_);
+    protected void saveAdditional(CompoundTag p_187461_) {
+        ContainerHelper.saveAllItems(p_187461_, this.items);
+        p_187461_.putInt("actualWater", actualWater);
+        p_187461_.putInt("filterProgress", filterProgress);
+        p_187461_.putInt("nbFilter", nbFilter);
+        p_187461_.putInt("tickToFill", tickToFillWater);
+        super.saveAdditional(p_187461_);
     }
 
     @Override

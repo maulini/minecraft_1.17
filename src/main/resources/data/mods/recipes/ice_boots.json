@@ -1,0 +1,18 @@
+{
+  "type": "mods:craft",
+  "pattern": [
+    " # ",
+    "A A"
+  ],
+  "key": {
+    "#": {
+      "item": "mods:titanium_boots"
+    },
+    "A": {
+      "item": "minecraft:ice"
+    }
+  },
+  "result": {
+    "item": "mods:ice_boots"
+  }
+}

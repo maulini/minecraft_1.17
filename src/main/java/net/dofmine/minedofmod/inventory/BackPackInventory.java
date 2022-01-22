@@ -2,18 +2,16 @@ package net.dofmine.minedofmod.inventory;
 
 import net.dofmine.minedofmod.MinedofMod;
 import net.dofmine.minedofmod.items.ModItems;
-import net.dofmine.minedofmod.items.backpack.BackPackItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.Container;
 import net.minecraft.world.Nameable;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.common.util.Constants;
 
 public class BackPackInventory implements Container, Nameable {
 
@@ -37,7 +35,7 @@ public class BackPackInventory implements Container, Nameable {
      *            the container NBTTagCompound
      */
     public void readFromNBT(CompoundTag comp) {
-        ListTag nbtlist = comp.getList("Inventory", Constants.NBT.TAG_COMPOUND);
+        ListTag nbtlist = comp.getList("Inventory", Tag.TAG_COMPOUND);
         for (int i = 0; i < nbtlist.size(); i++) {
             CompoundTag comp1 = nbtlist.getCompound(i);
             int slot = comp1.getInt("Slot");

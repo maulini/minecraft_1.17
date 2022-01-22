@@ -11,4 +11,7 @@ public class ModDimension {
     public static ResourceKey<Level> DARKDim = ResourceKey.create(Registry.DIMENSION_REGISTRY,
             new ResourceLocation(MinedofMod.MODS_ID, "dark/darkdim"));
 
+    public static void register() {
+    }
+
 }

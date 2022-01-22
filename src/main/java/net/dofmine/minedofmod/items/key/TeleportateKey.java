@@ -8,14 +8,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.world.InteractionHand;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +44,7 @@ public class TeleportateKey extends Item {
                 dimension = level.dimensionType().effectsLocation().getPath();
             }
                 if (itemStack.hasTag()) {
-                    ListTag doors = itemStack.getTag().getList(dimension, Constants.NBT.TAG_COMPOUND);
+                    ListTag doors = itemStack.getTag().getList(dimension, Tag.TAG_COMPOUND);
                     if (!havePosition(doors, context.getClickedPos())) {
                         addDoorTeleportate(itemStack, context.getClickedPos());
                     }
@@ -50,11 +52,16 @@ public class TeleportateKey extends Item {
                     addDoorTeleportate(itemStack, context.getClickedPos());
                 }
             if (level.isClientSide) {
-                Minecraft.getInstance().setScreen(new TeleportateScreen(itemStack, context.getPlayer(), level));
+                openScreen(itemStack, context.getPlayer());
             }
             ((SpecialDoorTeleportate) blockState.getBlock()).openOrCloseDoor(blockState, level, context.getClickedPos(), context.getPlayer());
         }
         return InteractionResult.sidedSuccess(level.isClientSide);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    private void openScreen(ItemStack itemStack, Player player) {
+        Minecraft.getInstance().setScreen(new TeleportateScreen(itemStack, player));
     }
 
     private boolean havePosition(ListTag doors, BlockPos clickedPos) {
@@ -72,7 +79,7 @@ public class TeleportateKey extends Item {
         if (!teleportateKey.hasTag()) {
             teleportateKey.getOrCreateTag().put(dimension, new ListTag());
         }
-        ListTag doors = teleportateKey.getTag().getList(dimension, Constants.NBT.TAG_COMPOUND);
+        ListTag doors = teleportateKey.getTag().getList(dimension, Tag.TAG_COMPOUND);
         CompoundTag door = new CompoundTag();
         CompoundTag position = new CompoundTag();
         position.putInt(XPOS, blockPos.getX());
@@ -91,7 +98,7 @@ public class TeleportateKey extends Item {
     public List<BlockPos> getBlockPositions(ItemStack itemStack) {
         List<BlockPos> blockPos = new ArrayList<>();
         if (itemStack.hasTag()) {
-            ListTag doors = itemStack.getTag().getList(dimension, Constants.NBT.TAG_COMPOUND);
+            ListTag doors = itemStack.getTag().getList(dimension, Tag.TAG_COMPOUND);
             for (int i = 0; i < doors.size(); i++) {
                 CompoundTag position = doors.getCompound(i).getCompound(DOOR+i);
                 blockPos.add(new BlockPos(position.getInt(XPOS), position.getInt(YPOS), position.getInt(ZPOS)));

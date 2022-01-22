@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#F#",
+    "CSC",
+    "#F#"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:stick"
+    },
+    "F": {
+      "item": "minecraft:string"
+    },
+    "S": {
+      "item": "minecraft:sand"
+    },
+    "C": {
+      "item": "minecraft:clay_ball"
+    }
+  },
+  "result": {
+    "item": "mods:filter_water",
+    "count": 1
+  }
+}

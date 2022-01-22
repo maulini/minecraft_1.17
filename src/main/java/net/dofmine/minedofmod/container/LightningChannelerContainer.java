@@ -2,7 +2,6 @@ package net.dofmine.minedofmod.container;
 
 
 import net.dofmine.minedofmod.block.ModBlocks;
-import net.minecraft.client.gui.spectator.PlayerMenuItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -10,13 +9,10 @@ import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
-
-import javax.annotation.Nullable;
 
 public class LightningChannelerContainer extends AbstractContainerMenu {
     private final BlockEntity blockEntity;

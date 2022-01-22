@@ -1,5 +1,6 @@
 package net.dofmine.minedofmod.data.recipes.vacuum;
 
+import net.dofmine.minedofmod.data.recipes.ModRecipeType;
 import net.dofmine.minedofmod.items.ModItems;
 import net.dofmine.minedofmod.setup.ClientSetup;
 import net.minecraft.resources.ResourceLocation;
@@ -13,8 +14,11 @@ import net.minecraft.world.level.block.CraftingTableBlock;
 
 public class RevertVacuumBackPack extends CustomRecipe {
 
+    public static ResourceLocation resourceLocation;
+
     public RevertVacuumBackPack(ResourceLocation res) {
         super(res);
+        RevertVacuumBackPack.resourceLocation = res;
     }
 
     @Override
@@ -53,6 +57,13 @@ public class RevertVacuumBackPack extends CustomRecipe {
     }
 
     public RecipeSerializer<?> getSerializer() {
-        return ClientSetup.REVERT_VACUUM_CRAFTING;
+        return ModRecipeType.REVERT_VACUUM_SERIALIZER_RECIPE.get();
+    }
+
+    public static class RevertVacuumRecipeType implements RecipeType<RevertVacuumBackPack> {
+        @Override
+        public String toString() {
+            return RevertVacuumBackPack.resourceLocation.toString();
+        }
     }
 }

@@ -7,8 +7,11 @@ import net.dofmine.minedofmod.container.WaterCollectorContainer;
 import net.dofmine.minedofmod.tileentity.WaterCollectorTile;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+
+import java.util.UUID;
 
 public class WaterCollectorScreen extends AbstractContainerScreen<WaterCollectorContainer> {
 
@@ -35,7 +38,7 @@ public class WaterCollectorScreen extends AbstractContainerScreen<WaterCollector
         int j = this.getGuiTop();
         blit(p_97787_, i, j, 0, 0, getXSize(), getYSize());
 
-        blit(p_97787_, i + 60, j + 35, 179, 0, 8, menu.getActualWater());
+        blit(p_97787_, i + 60, j + 35, 179, 0, 8, getImageHeight());
         if (menu.canFilter()) {
             blit(p_97787_, i + 80, j + 35, 177, 16, getImageWidth(), 15);
         }

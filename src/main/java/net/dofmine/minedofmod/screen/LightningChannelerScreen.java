@@ -12,7 +12,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ChestMenu;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
+@OnlyIn(Dist.CLIENT)
 public class LightningChannelerScreen extends AbstractContainerScreen<LightningChannelerContainer> {
 
     private final ResourceLocation GUI = new ResourceLocation(MinedofMod.MODS_ID, "textures/gui/lightning_channeler_gui.png");

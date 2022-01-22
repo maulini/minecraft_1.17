@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GF",
+    "LD"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:gold_block"
+    },
+    "F":{
+      "item": "minecraft:iron_block"
+    },
+    "L": {
+      "item": "minecraft:lapis_block"
+    },
+    "D": {
+      "item": "minecraft:diamond_block"
+    }
+  },
+  "result": {
+    "item": "mods:lightning_channeler",
+    "count": 1
+  }
+}

@@ -9,7 +9,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
+@OnlyIn(Dist.CLIENT)
 public class HydrationBar extends Gui {
 
     private final ResourceLocation HYDRATION = new ResourceLocation(MinedofMod.MODS_ID, "textures/gui/custom_bar/thirst.png");

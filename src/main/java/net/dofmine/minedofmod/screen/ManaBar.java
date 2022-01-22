@@ -7,9 +7,12 @@ import net.dofmine.minedofmod.job.ExtendedEntityPlayer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.gui.IIngameOverlay;
 import net.minecraftforge.client.gui.OverlayRegistry;
 
+@OnlyIn(Dist.CLIENT)
 public class ManaBar extends Gui {
 
     private final ResourceLocation MANA_BAR = new ResourceLocation(MinedofMod.MODS_ID, "textures/gui/custom_bar/mana_bar.png");

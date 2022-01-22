@@ -1,0 +1,17 @@
+{
+  "type": "mods:craft",
+  "pattern": [
+    "####",
+    "#  #",
+    "#  #",
+    "#  #"
+  ],
+  "key": {
+    "#": {
+      "item": "mods:lapis_ingot"
+    }
+  },
+  "result": {
+    "item": "mods:lapis_leggings"
+  }
+}

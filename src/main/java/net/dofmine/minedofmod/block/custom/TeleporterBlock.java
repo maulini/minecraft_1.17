@@ -63,13 +63,6 @@ public class TeleporterBlock extends Block {
             while(p_54938_.getBlockState(p_54939_).is(this)) {
                 p_54939_ = p_54939_.below();
             }
-
-            if (p_54938_.getBlockState(p_54939_).isValidSpawn(p_54938_, p_54939_, EntityType.ZOMBIFIED_PIGLIN)) {
-                Entity entity = EntityType.ZOMBIFIED_PIGLIN.spawn(p_54938_, (CompoundTag)null, (Component)null, (Player)null, p_54939_.above(), MobSpawnType.STRUCTURE, false, false);
-                if (entity != null) {
-                    entity.setPortalCooldown();
-                }
-            }
         }
 
     }
@@ -117,9 +110,9 @@ public class TeleporterBlock extends Block {
                             pPlayer.changeDimension(overWorld, new DarkTeleporter(pPos, false));
                         }
                     } else {
-                        ServerLevel kjDim = server.getLevel(ModDimension.DARKDim);
-                        if (kjDim != null) {
-                            pPlayer.changeDimension(kjDim, new DarkTeleporter(pPos, true));
+                        ServerLevel dark = server.getLevel(ModDimension.DARKDim);
+                        if (dark != null) {
+                            pPlayer.changeDimension(dark, new DarkTeleporter(pPos, true));
                         }
                     }
                 }

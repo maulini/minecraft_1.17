@@ -7,7 +7,10 @@ import net.dofmine.minedofmod.data.recipes.ModRecipeType;
 import net.dofmine.minedofmod.effects.ModEffect;
 import net.dofmine.minedofmod.items.ModItems;
 import net.dofmine.minedofmod.network.Networking;
-import net.dofmine.minedofmod.screen.*;
+import net.dofmine.minedofmod.screen.BackPackScreen;
+import net.dofmine.minedofmod.screen.CraftingTableScreen;
+import net.dofmine.minedofmod.screen.LightningChannelerScreen;
+import net.dofmine.minedofmod.screen.WaterCollectorScreen;
 import net.dofmine.minedofmod.setup.ClientSetup;
 import net.dofmine.minedofmod.tileentity.ModEntity;
 import net.dofmine.minedofmod.tileentity.ModTileEntity;
@@ -19,7 +22,6 @@ import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.*;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -33,9 +35,9 @@ import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.lwjgl.glfw.GLFW;
 import top.theillusivec4.curios.api.SlotTypeMessage;
 import top.theillusivec4.curios.api.SlotTypePreset;
+
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(MinedofMod.MODS_ID)
@@ -58,15 +60,15 @@ public class MinedofMod {
         ModFluids.register(modEventBus);
         ModEntity.register(modEventBus);
         ModEffect.register(modEventBus);
-        modEventBus.addListener(this::initSprite);
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::enqueueIMC);
         modEventBus.addListener(this::doClientStuff);
-        Networking.registerMessages();
         // Register ourselves for server and other game events we are interested
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> modEventBus.addListener(ClientSetup::init));
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->  {
+            modEventBus.addListener(this::initSprite);
+            modEventBus.addListener(ClientSetup::init);
+        });
         MinecraftForge.EVENT_BUS.register(this);
-        MinecraftForge.EVENT_BUS.register(new ClientSetup());
     }
 
     private void initSprite(final TextureStitchEvent.Pre event) {
@@ -75,9 +77,8 @@ public class MinedofMod {
 
     private void doClientStuff(final FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
-            //Rectangle maximumView = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-            GLFW.glfwSetWindowSize(Minecraft.getInstance().getWindow().getWindow(), 1920, 1080);
-            GLFW.glfwSetWindowPos(Minecraft.getInstance().getWindow().getWindow(), 0, 0);
+            Minecraft.getInstance().getWindow().toggleFullScreen();
+            Minecraft.getInstance().getWindow().changeFullscreenVideoMode();
             MenuScreens.register(ModContainer.LIGHTNING_CHANNELER_CONTAINER.get(), LightningChannelerScreen::new);
             MenuScreens.register(ModContainer.CRAFTING_TABLE_CONTAINER.get(), CraftingTableScreen::new);
             MenuScreens.register(ModContainer.BACK_PACK_CONTAINER.get(), BackPackScreen::new);
@@ -106,7 +107,7 @@ public class MinedofMod {
     private void setup(final FMLCommonSetupEvent event) {
         // some preinit code
         LOGGER.info("HELLO FROM PREINIT");
-        LOGGER.info("DIRT BLOCK >> {}", Blocks.DIRT.getRegistryName());
+        Networking.registerMessages();
     }
 
 }

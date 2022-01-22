@@ -4,9 +4,12 @@ import net.dofmine.minedofmod.MinedofMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.fmllegacy.network.NetworkDirection;
-import net.minecraftforge.fmllegacy.network.NetworkRegistry;
-import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 
 public class Networking {
 
@@ -71,8 +74,10 @@ public class Networking {
     }
 
     public static void sendToServer(Object packet) {
-        if (Minecraft.getInstance().getConnection() != null) {
-            INSTANCE.sendToServer(packet);
-        }
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, ()-> () -> {
+            if (Minecraft.getInstance().getConnection() != null) {
+                INSTANCE.sendToServer(packet);
+            }
+        });
     }
 }

@@ -1,13 +1,10 @@
 package net.dofmine.minedofmod.items.finder;
 
-import net.dofmine.minedofmod.MinedofMod;
 import net.dofmine.minedofmod.screen.ChunkFinderScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.data.models.model.TexturedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -17,7 +14,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.ModelDataManager;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -28,7 +27,7 @@ public class ChunkFinder extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public @NotNull InteractionResultHolder<ItemStack> use(Level level, @NotNull Player player, @NotNull InteractionHand hand) {
         if (level.isClientSide) {
             ChunkPos chunkPos = level.getChunk(player.blockPosition()).getPos();
             int playerYPos = player.getBlockY();
@@ -50,9 +49,14 @@ public class ChunkFinder extends Item {
                     }
                 }
             }
-            Minecraft.getInstance().setScreen(new ChunkFinderScreen(itemInChunk));
+            openScreen(itemInChunk);
             return InteractionResultHolder.success(player.getItemInHand(hand));
         }
         return InteractionResultHolder.fail(player.getItemInHand(hand));
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    private void openScreen(Map<ResourceLocation, Integer> itemInChunk) {
+        Minecraft.getInstance().setScreen(new ChunkFinderScreen(itemInChunk));
     }
 }

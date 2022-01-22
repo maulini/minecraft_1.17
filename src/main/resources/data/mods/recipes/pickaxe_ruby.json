@@ -1,0 +1,20 @@
+{
+  "type": "mods:craft",
+  "pattern": [
+    "####",
+    " ## ",
+    " KK ",
+    " KK "
+  ],
+  "key": {
+    "#": {
+      "item": "mods:rubis_ingot"
+    },
+    "K": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "item": "mods:rubis_pickaxe"
+  }
+}

@@ -6,6 +6,7 @@ import net.dofmine.minedofmod.network.Networking;
 import net.dofmine.minedofmod.network.PacketHunterJobs;
 import net.dofmine.minedofmod.network.PacketLocksmithJobs;
 import net.dofmine.minedofmod.setup.ClientSetup;
+import net.dofmine.minedofmod.setup.EventHandler;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
@@ -43,7 +44,7 @@ public class ExtendedLocksmithJobsEntityPlayer implements ICapabilitySerializabl
     }
 
     public static final ExtendedLocksmithJobsEntityPlayer get() {
-        return (ExtendedLocksmithJobsEntityPlayer) attachCapabilitiesEvent.getCapabilities().get(EXT_PROP_NAME);
+        return attachCapabilitiesEvent == null ? null : (ExtendedLocksmithJobsEntityPlayer) attachCapabilitiesEvent.getCapabilities().get(EXT_PROP_NAME);
     }
 
     @Nonnull
@@ -57,7 +58,7 @@ public class ExtendedLocksmithJobsEntityPlayer implements ICapabilitySerializabl
         CompoundTag properties = new CompoundTag();
 
         properties.put("level", IntTag.valueOf(this.level));
-        ClientSetup.storeEntityData(player.getDisplayName().getString(), properties);
+        EventHandler.storeEntityData(player.getDisplayName().getString(), properties);
         return properties;
     }
 
@@ -77,9 +78,11 @@ public class ExtendedLocksmithJobsEntityPlayer implements ICapabilitySerializabl
 
     public void sync() {
         PacketLocksmithJobs packetJobs = new PacketLocksmithJobs(this.level);
-        Networking.sendToServer(packetJobs);
-
         if (player.level.isClientSide) {
+            Networking.sendToServer(packetJobs);
+        }
+
+        if (!player.level.isClientSide) {
             Networking.sendToClient(packetJobs, (ServerPlayer) player);
         }
     }

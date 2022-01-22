@@ -1,0 +1,20 @@
+{
+  "type": "mods:craft",
+  "pattern": [
+    " ###",
+    " ###",
+    " KK ",
+    " K  "
+  ],
+  "key": {
+    "#": {
+      "item": "mods:god_ingot"
+    },
+    "K": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "item": "mods:god_axe"
+  }
+}

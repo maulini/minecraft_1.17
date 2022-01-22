@@ -6,6 +6,7 @@ import net.dofmine.minedofmod.network.Networking;
 import net.dofmine.minedofmod.network.PacketFarmerJobs;
 import net.dofmine.minedofmod.network.PacketHunterJobs;
 import net.dofmine.minedofmod.setup.ClientSetup;
+import net.dofmine.minedofmod.setup.EventHandler;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
@@ -71,7 +72,7 @@ public class ExtendedFarmerJobsEntityPlayer implements ICapabilitySerializable {
     }
 
     public static final ExtendedFarmerJobsEntityPlayer get() {
-        return (ExtendedFarmerJobsEntityPlayer) attachCapabilitiesEvent.getCapabilities().get(EXT_PROP_NAME);
+        return attachCapabilitiesEvent == null ? null : (ExtendedFarmerJobsEntityPlayer) attachCapabilitiesEvent.getCapabilities().get(EXT_PROP_NAME);
     }
 
     @Nonnull
@@ -87,7 +88,7 @@ public class ExtendedFarmerJobsEntityPlayer implements ICapabilitySerializable {
         properties.put("xp", LongTag.valueOf(this.xp));
         properties.put("level", IntTag.valueOf(this.level));
         properties.put("maxXp", LongTag.valueOf(this.maxLevel));
-        ClientSetup.storeEntityData(player.getDisplayName().getString(), properties);
+        EventHandler.storeEntityData(player.getDisplayName().getString(), properties);
         return properties;
     }
 
@@ -117,7 +118,7 @@ public class ExtendedFarmerJobsEntityPlayer implements ICapabilitySerializable {
         PacketFarmerJobs packetJobs = new PacketFarmerJobs(this.xp, this.level, this.maxXp);
         Networking.sendToServer(packetJobs);
 
-        if (player.level.isClientSide) {
+        if (!player.level.isClientSide) {
             Networking.sendToClient(packetJobs, (ServerPlayer) player);
         }
     }

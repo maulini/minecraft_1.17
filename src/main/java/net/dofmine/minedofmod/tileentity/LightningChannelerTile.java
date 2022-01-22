@@ -14,10 +14,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fmllegacy.TextComponentMessageFormatHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.RecipeWrapper;
 
@@ -25,7 +23,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
-public class LightningChannelerTile extends BlockEntity implements Tickable  {
+public class LightningChannelerTile extends BlockEntity  {
 
     private final ItemStackHandler itemHandler = createHandler();
     private final LazyOptional<IItemHandler> handler = LazyOptional.of(() -> itemHandler);
@@ -41,9 +39,9 @@ public class LightningChannelerTile extends BlockEntity implements Tickable  {
     }
 
     @Override
-    public CompoundTag save(CompoundTag p_58888_) {
-        p_58888_.put("inv", itemHandler.serializeNBT());
-        return super.save(p_58888_);
+    protected void saveAdditional(CompoundTag p_187471_) {
+        p_187471_.put("inv", itemHandler.serializeNBT());
+        super.saveAdditional(p_187471_);
     }
 
     private ItemStackHandler createHandler() {
@@ -130,11 +128,4 @@ public class LightningChannelerTile extends BlockEntity implements Tickable  {
         itemHandler.insertItem(1, output, false);
     }
 
-    @Override
-    public void tick() {
-        if(level.isClientSide) {
-            return;
-        }
-        craft();
-    }
 }

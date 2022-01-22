@@ -2,17 +2,13 @@ package net.dofmine.minedofmod.tileentity;
 
 import net.dofmine.minedofmod.data.recipes.ModRecipeType;
 import net.dofmine.minedofmod.data.recipes.crafting.CraftingRecipe;
-import net.dofmine.minedofmod.data.recipes.lightning.LightningChannelerRecipe;
-import net.dofmine.minedofmod.items.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -42,9 +38,9 @@ public class CraftingTableTile extends BlockEntity {
     }
 
     @Override
-    public CompoundTag save(CompoundTag p_58888_) {
-        p_58888_.put("inv", itemHandler.serializeNBT());
-        return super.save(p_58888_);
+    protected void saveAdditional(CompoundTag p_187471_) {
+        p_187471_.put("inv", itemHandler.serializeNBT());
+        super.saveAdditional(p_187471_);
     }
 
     private ItemStackHandler createHandler() {

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "mods:dark_block"
+    }
+  ],
+  "result": {
+    "item": "mods:dark_ingot",
+    "count": 16
+  }
+}

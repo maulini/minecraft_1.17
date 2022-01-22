@@ -6,6 +6,7 @@ import net.dofmine.minedofmod.network.Networking;
 import net.dofmine.minedofmod.network.PacketHunterJobs;
 import net.dofmine.minedofmod.network.PacketMinerJobs;
 import net.dofmine.minedofmod.setup.ClientSetup;
+import net.dofmine.minedofmod.setup.EventHandler;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
@@ -72,7 +73,7 @@ public class ExtendedMinerJobsEntityPlayer implements ICapabilitySerializable {
     }
 
     public static final ExtendedMinerJobsEntityPlayer get() {
-        return (ExtendedMinerJobsEntityPlayer) attachCapabilitiesEvent.getCapabilities().get(EXT_PROP_NAME);
+        return attachCapabilitiesEvent == null ? null : (ExtendedMinerJobsEntityPlayer) attachCapabilitiesEvent.getCapabilities().get(EXT_PROP_NAME);
     }
 
     @Nonnull
@@ -88,7 +89,7 @@ public class ExtendedMinerJobsEntityPlayer implements ICapabilitySerializable {
         properties.put("xp", LongTag.valueOf(this.xp));
         properties.put("level", IntTag.valueOf(this.level));
         properties.put("maxXp", LongTag.valueOf(this.maxXp));
-        ClientSetup.storeEntityData(player.getDisplayName().getString(), properties);
+        EventHandler.storeEntityData(player.getDisplayName().getString(), properties);
         return properties;
     }
 
@@ -118,7 +119,7 @@ public class ExtendedMinerJobsEntityPlayer implements ICapabilitySerializable {
         PacketMinerJobs packetJobs = new PacketMinerJobs(this.xp, this.level, this.maxXp);
         Networking.sendToServer(packetJobs);
 
-        if (player.level.isClientSide) {
+        if (!player.level.isClientSide) {
             Networking.sendToClient(packetJobs, (ServerPlayer) player);
         }
     }
