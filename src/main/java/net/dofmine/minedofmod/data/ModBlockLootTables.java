@@ -5,10 +5,15 @@ import net.dofmine.minedofmod.block.custom.TomatoPlantBlock;
 import net.dofmine.minedofmod.items.ModItems;
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
 import net.minecraft.data.loot.BlockLoot;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.functions.ApplyBonusCount;
 import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
 import net.minecraftforge.registries.RegistryObject;
 
 public class ModBlockLootTables extends BlockLoot {
@@ -29,6 +34,9 @@ public class ModBlockLootTables extends BlockLoot {
         });
         this.add(ModBlocks.RUBY_ORE.get(), (block) -> {
             return createOreDrop(ModBlocks.GOD_ORE.get(), ModBlocks.GOD_ORE.get().asItem());
+        });
+        this.add(Blocks.GRASS, block -> {
+           return createShearsDispatchTable(block, applyExplosionDecay(block, LootItem.lootTableItem(ModItems.TOMATO_SEEDS.get()).when(LootItemRandomChanceCondition.randomChance(0.125F)).apply(ApplyBonusCount.addUniformBonusCount(Enchantments.BLOCK_FORTUNE, 2))));
         });
 
         this.dropSelf(ModBlocks.LIGHTNING_CHANNELER.get());

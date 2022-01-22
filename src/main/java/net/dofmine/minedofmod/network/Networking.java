@@ -67,6 +67,24 @@ public class Networking {
                 .decoder(PacketHydration::decode)
                 .consumer(PacketHydration::handle)
                 .add();
+
+        INSTANCE.messageBuilder(PacketLevitationSpell.class, nextID())
+                .encoder(PacketLevitationSpell::encode)
+                .decoder(PacketLevitationSpell::decode)
+                .consumer(PacketLevitationSpell::handle)
+                .add();
+
+        INSTANCE.messageBuilder(PacketSpawnThunderBlot.class, nextID())
+                .encoder(PacketSpawnThunderBlot::encode)
+                .decoder(PacketSpawnThunderBlot::decode)
+                .consumer(PacketSpawnThunderBlot::handle)
+                .add();
+
+        INSTANCE.messageBuilder(PacketSpawnWitch.class, nextID())
+                .encoder(PacketSpawnWitch::encode)
+                .decoder(PacketSpawnWitch::decode)
+                .consumer(PacketSpawnWitch::handle)
+                .add();
     }
 
     public static void sendToClient(Object packet, ServerPlayer player) {

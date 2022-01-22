@@ -9,19 +9,21 @@ import net.dofmine.minedofmod.items.ModArmorMaterial;
 import net.dofmine.minedofmod.items.ModItems;
 import net.dofmine.minedofmod.items.backpack.VacuumBackPack;
 import net.dofmine.minedofmod.job.*;
+import net.dofmine.minedofmod.network.Networking;
+import net.dofmine.minedofmod.network.PacketLevitationSpell;
+import net.dofmine.minedofmod.network.PacketSpawnThunderBlot;
+import net.dofmine.minedofmod.network.PacketSpawnWitch;
 import net.dofmine.minedofmod.screen.HydrationBar;
 import net.dofmine.minedofmod.screen.JobsScreen;
 import net.dofmine.minedofmod.screen.ManaBar;
 import net.dofmine.minedofmod.tileentity.Spells;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.monster.Ravager;
 import net.minecraft.world.entity.player.Player;
@@ -131,6 +133,7 @@ public class EventHandler {
     }
 
     @SubscribeEvent
+    @OnlyIn(Dist.CLIENT)
     public static void onKeyPressed(InputEvent.KeyInputEvent event) {
         if (ClientSetup.jobsKey.isDown()) {
             openGuiJobs();
@@ -139,13 +142,13 @@ public class EventHandler {
             //Minecraft.getInstance().setScreen(new ChooseSpellScreen(new TextComponent("")));
         }
         if (ClientSetup.spell1.isDown()) {
-            Spells.thunderBolt();
+            Networking.sendToServer(new PacketSpawnThunderBlot(Minecraft.getInstance().player.blockPosition(), Minecraft.getInstance().player.isCreative()));
         }
         if (ClientSetup.spell2.isDown()) {
-            Spells.levitation();
+            Networking.sendToServer(new PacketLevitationSpell(Minecraft.getInstance().player.blockPosition(), Minecraft.getInstance().player.isCreative()));
         }
         if (ClientSetup.spell3.isDown()) {
-            Spells.witch();
+            Networking.sendToServer(new PacketSpawnWitch(Minecraft.getInstance().player.blockPosition(), Minecraft.getInstance().player.isCreative()));
         }
         if (event.getKey() == Minecraft.getInstance().options.keyShift.getKey().getValue() && !Minecraft.getInstance().options.keyShift.isDown()) {
             canTeleportate = true;

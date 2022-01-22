@@ -24,7 +24,6 @@ import java.util.List;
 public class TeleportateList extends ContainerObjectSelectionList<TeleportateList.Entry> {
 
     private final ResourceLocation GUI = new ResourceLocation(MinedofMod.MODS_ID, "textures/gui/teleport_gui_extended.png");
-    @OnlyIn(Dist.CLIENT)
     final TeleportateScreen teleportateScreen;
 
     public TeleportateList(TeleportateScreen p_97399_, Minecraft p_97400_, Player player) {
@@ -79,10 +78,8 @@ public class TeleportateList extends ContainerObjectSelectionList<TeleportateLis
     @OnlyIn(Dist.CLIENT)
     public class TeleportateEntry extends TeleportateList.Entry {
         private final Button button;
-        private final int y;
 
         TeleportateEntry(int x, int y, BlockPos blockPos, int nbItemToRemove, Player player) {
-            this.y = y;
             button = new Button(x, y, 200, 20, new TextComponent("X : " + blockPos.getX() + " / Y : " + blockPos.getY() + " / Z : " + blockPos.getZ()), button -> {
                 if ((player.getInventory().countItem(ModItems.COINS.get()) != 0 && player.getInventory().countItem(ModItems.COINS.get()) >= nbItemToRemove) || player.isCreative()) {
                     if (!player.isCreative()) {

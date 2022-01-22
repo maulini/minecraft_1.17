@@ -6,6 +6,14 @@
     "mods:ruby_ore",
     "mods:dark_ore",
     "mods:lapis_ore",
-    "mods:god_ore"
+    "mods:god_ore",
+    "mods:ruby_block",
+    "mods:lapis_block",
+    "mods:dark_block",
+    "mods:water_collector",
+    "mods:stone_dark",
+    "mods:cobble_dark",
+    "mods:lightning_channeler",
+    "mods:special_door"
   ]
 }

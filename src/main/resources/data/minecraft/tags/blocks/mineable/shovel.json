@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-
+    "mods:dirt_dark",
+    "mods:grass_dark"
   ]
 }

@@ -1,6 +1,8 @@
 {
   "replace": false,
   "values": [
-
+    "mods:redwood_log",
+    "mods:redwood_planks",
+    "mods:crafting_table"
   ]
 }
