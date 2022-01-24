@@ -40,7 +40,7 @@ import java.util.function.Supplier;
 public class ModBlocks {
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MinedofMod.MODS_ID);
-    public static final Map<Block, Function<Integer, Long>> registerFunction = new HashMap<>();
+    public static final Map<Item, Function<Integer, Long>> registerFunction = new HashMap<>();
 
     /***********************************
      ***************BLOCK***************
@@ -192,7 +192,7 @@ public class ModBlocks {
         ModItems.ITEMS.register(name, () -> {
             T realBlock = block.get();
             if (function != null) {
-                registerFunction.put(realBlock, function);
+                registerFunction.put(realBlock.asItem(), function);
             }
             return new BlockItem(realBlock, new Item.Properties().tab(ModCreativeTabs.MODS_TABS));
         });

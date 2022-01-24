@@ -60,13 +60,13 @@ public class MinedofMod {
         ModFluids.register(modEventBus);
         ModEntity.register(modEventBus);
         ModEffect.register(modEventBus);
+        modEventBus.addListener(ClientSetup::init);
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::enqueueIMC);
         modEventBus.addListener(this::doClientStuff);
         // Register ourselves for server and other game events we are interested
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->  {
             modEventBus.addListener(this::initSprite);
-            modEventBus.addListener(ClientSetup::init);
         });
         MinecraftForge.EVENT_BUS.register(this);
     }

@@ -24,9 +24,9 @@ public class PacketFarmerJobs {
     public static boolean handle(PacketFarmerJobs packetJobs, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ExtendedFarmerJobsEntityPlayer props = ExtendedFarmerJobsEntityPlayer.get();
-            packetJobs.xp = props.xp;
-            packetJobs.level = props.level;
-            packetJobs.maxXp = props.maxXp;
+            props.xp = packetJobs.xp;
+            props.level = packetJobs.level;
+            props.maxXp = packetJobs.maxXp;
         });
         return true;
     }

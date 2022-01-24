@@ -12,13 +12,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.event.*;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -27,10 +25,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-@Mod.EventBusSubscriber(modid = MinedofMod.MODS_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = MinedofMod.MODS_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClientSetup {
-    public static final Map<Block, Function<Integer, Long>> xpByBlockMiner = new HashMap<>();
-    public static final Map<Block, Function<Integer, Long>> xpByBlockFarmer = new HashMap<>();
+    public static final Map<Item, Function<Integer, Long>> xpByBlockMiner = new HashMap<>();
+    public static final Map<Item, Function<Integer, Long>> xpByBlockFarmer = new HashMap<>();
     public static final Map<Item, Function<Integer, Long>> xpByItemFarmer = new HashMap<>();
     public static final Map<EntityType<? extends Entity>, Function<Integer, Long>> xpByEntityHunter = new HashMap<>();
     public static final Map<EntityType<? extends Entity>, Integer> canAttackEntity = new HashMap<>();
@@ -43,7 +41,7 @@ public class ClientSetup {
     public static ServerLevel serverLevel;
 
     public static void addBlocks(Block block, Function<Integer, Long> function) {
-        xpByBlockMiner.put(block, function);
+        xpByBlockMiner.put(block.asItem(), function);
     }
 
     public static void addUseItem(ResourceLocation item, Class<?> clazz, int levelToUse) {
@@ -190,7 +188,7 @@ public class ClientSetup {
             }
             return value;
         });
-        xpByBlockFarmer.put(Blocks.WHEAT, i -> {
+        xpByBlockFarmer.put(Blocks.WHEAT.asItem(), i -> {
             long value = 0L;
             if (i >= 1 && i < 5) {
                 value = 10L;
@@ -199,7 +197,7 @@ public class ClientSetup {
             }
             return value;
         });
-        xpByBlockFarmer.put(Blocks.CARROTS, i -> {
+        xpByBlockFarmer.put(Blocks.CARROTS.asItem(), i -> {
             long value = 0L;
             if (i >= 1 && i < 5) {
                 value = 15L;
@@ -210,7 +208,7 @@ public class ClientSetup {
             }
             return value;
         });
-        xpByBlockFarmer.put(Blocks.POTATOES, i -> {
+        xpByBlockFarmer.put(Blocks.POTATOES.asItem(), i -> {
             long value = 0L;
             if (i >= 1 && i < 5) {
                 value = 15L;
@@ -221,7 +219,7 @@ public class ClientSetup {
             }
             return value;
         });
-        xpByBlockFarmer.put(Blocks.MELON, i -> {
+        xpByBlockFarmer.put(Blocks.MELON.asItem(), i -> {
             long value = 0L;
             if (i >= 5 && i < 10) {
                 value = 150L;

@@ -85,6 +85,13 @@ public class Networking {
                 .decoder(PacketSpawnWitch::decode)
                 .consumer(PacketSpawnWitch::handle)
                 .add();
+
+        INSTANCE.messageBuilder(PacketBreakBlock.class, nextID())
+                .encoder(PacketBreakBlock::encode)
+                .decoder(PacketBreakBlock::decode)
+                .consumer(PacketBreakBlock::handle)
+                .add();
+
     }
 
     public static void sendToClient(Object packet, ServerPlayer player) {

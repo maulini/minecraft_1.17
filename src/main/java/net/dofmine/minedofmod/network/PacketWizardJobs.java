@@ -24,9 +24,9 @@ public class PacketWizardJobs {
     public static boolean handle(PacketWizardJobs packetJobs, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ExtendedWizardJobsEntityPlayer props = ExtendedWizardJobsEntityPlayer.get();
-            packetJobs.xp = props.xp;
-            packetJobs.level = props.level;
-            packetJobs.maxXp = props.maxXp;
+            props.xp = packetJobs.xp;
+            props.level = packetJobs.level;
+            props.maxXp = packetJobs.maxXp;
         });
         return true;
     }

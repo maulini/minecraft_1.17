@@ -9,10 +9,7 @@ import net.dofmine.minedofmod.items.ModArmorMaterial;
 import net.dofmine.minedofmod.items.ModItems;
 import net.dofmine.minedofmod.items.backpack.VacuumBackPack;
 import net.dofmine.minedofmod.job.*;
-import net.dofmine.minedofmod.network.Networking;
-import net.dofmine.minedofmod.network.PacketLevitationSpell;
-import net.dofmine.minedofmod.network.PacketSpawnThunderBlot;
-import net.dofmine.minedofmod.network.PacketSpawnWitch;
+import net.dofmine.minedofmod.network.*;
 import net.dofmine.minedofmod.screen.HydrationBar;
 import net.dofmine.minedofmod.screen.JobsScreen;
 import net.dofmine.minedofmod.screen.ManaBar;
@@ -49,6 +46,7 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.*;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -65,7 +63,6 @@ public class EventHandler {
     private static final Map<String, CompoundTag> extendedEntityData = new HashMap<String, CompoundTag>();
     // Directly reference a log4j logger.
     private static final Logger LOGGER = LogManager.getLogger();
-    private static boolean canTeleportate;
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
@@ -79,7 +76,9 @@ public class EventHandler {
     @SubscribeEvent
     public static void playerTickEvent(TickEvent.PlayerTickEvent event) {
         Player player = event.player;
-        HydrationEntityPlayer.get().tick(player);
+        if (player.level.isClientSide) {
+            HydrationEntityPlayer.get().tick(player);
+        }
         if (!player.getInventory().getArmor(0).isEmpty()) {
             if (((ArmorItem) player.getInventory().getArmor(0).getItem()).getMaterial().equals(ModArmorMaterial.GOD)) {
                 walkOnWater(player.level, player);
@@ -133,7 +132,6 @@ public class EventHandler {
     }
 
     @SubscribeEvent
-    @OnlyIn(Dist.CLIENT)
     public static void onKeyPressed(InputEvent.KeyInputEvent event) {
         if (ClientSetup.jobsKey.isDown()) {
             openGuiJobs();
@@ -142,16 +140,13 @@ public class EventHandler {
             //Minecraft.getInstance().setScreen(new ChooseSpellScreen(new TextComponent("")));
         }
         if (ClientSetup.spell1.isDown()) {
-            Networking.sendToServer(new PacketSpawnThunderBlot(Minecraft.getInstance().player.blockPosition(), Minecraft.getInstance().player.isCreative()));
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> Networking.sendToServer(new PacketSpawnThunderBlot(Minecraft.getInstance().player.blockPosition(), Minecraft.getInstance().player.isCreative())));
         }
         if (ClientSetup.spell2.isDown()) {
-            Networking.sendToServer(new PacketLevitationSpell(Minecraft.getInstance().player.blockPosition(), Minecraft.getInstance().player.isCreative()));
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> Networking.sendToServer(new PacketLevitationSpell(Minecraft.getInstance().player.blockPosition(), Minecraft.getInstance().player.isCreative())));
         }
         if (ClientSetup.spell3.isDown()) {
-            Networking.sendToServer(new PacketSpawnWitch(Minecraft.getInstance().player.blockPosition(), Minecraft.getInstance().player.isCreative()));
-        }
-        if (event.getKey() == Minecraft.getInstance().options.keyShift.getKey().getValue() && !Minecraft.getInstance().options.keyShift.isDown()) {
-            canTeleportate = true;
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> Networking.sendToServer(new PacketSpawnWitch(Minecraft.getInstance().player.blockPosition(), Minecraft.getInstance().player.isCreative())));
         }
     }
 
@@ -215,13 +210,15 @@ public class EventHandler {
 
     @SubscribeEvent
     public static void onEntityDeath(LivingDeathEvent event) {
-        if (!event.getEntity().level.isClientSide) {
-            if (event.getEntity() instanceof Ravager) {
-                ExtendedEntityPlayer.get().addMana(2);
-            }
-            if (ClientSetup.xpByEntityHunter.containsKey(event.getEntity().getType())) {
-                ExtendedHunterJobsEntityPlayer hunter = ExtendedHunterJobsEntityPlayer.get();
-                hunter.addXp(ClientSetup.xpByEntityHunter.get(event.getEntity().getType()).apply(hunter.level));
+        if (event.getEntity().level.isClientSide) {
+            if (event.getSource().getEntity() instanceof Player) {
+                if (event.getEntity() instanceof Ravager) {
+                    ExtendedEntityPlayer.get().addMana(2);
+                }
+                if (ClientSetup.xpByEntityHunter.containsKey(event.getEntity().getType())) {
+                    ExtendedHunterJobsEntityPlayer hunter = ExtendedHunterJobsEntityPlayer.get();
+                    hunter.addXp(ClientSetup.xpByEntityHunter.get(event.getEntity().getType()).apply(hunter.level));
+                }
             }
             if (event.getEntity() instanceof Player) {
                 HydrationEntityPlayer.get().addHydration(20);
@@ -231,22 +228,14 @@ public class EventHandler {
     
     @SubscribeEvent
     public static void onBlockDestroy(BlockEvent.BreakEvent event) {
-        if (!event.getPlayer().isCreative() && !event.getPlayer().level.isClientSide) {
-            if (ClientSetup.xpByBlockMiner.containsKey(event.getState().getBlock())) {
-                ExtendedMinerJobsEntityPlayer minerJobs = ExtendedMinerJobsEntityPlayer.get();
-                Function<Integer, Long> func = ClientSetup.xpByBlockMiner.get(event.getState().getBlock());
-                minerJobs.addXp(func.apply(minerJobs.level));
-            }else if (ClientSetup.xpByBlockFarmer.containsKey(event.getState().getBlock())) {
-                ExtendedFarmerJobsEntityPlayer farmerJobs = ExtendedFarmerJobsEntityPlayer.get();
-                Function<Integer, Long> func = ClientSetup.xpByBlockFarmer.get(event.getState().getBlock());
-                farmerJobs.addXp(func.apply(farmerJobs.level));
-            }
+        if (!event.getPlayer().isCreative()) {
+            Networking.sendToClient(new PacketBreakBlock(new ItemStack(event.getState().getBlock().asItem())), (ServerPlayer) event.getPlayer());
         }
     }
 
     @SubscribeEvent
     public static void onEntityAttack(AttackEntityEvent event) {
-        if (!event.getPlayer().level.isClientSide && !event.getPlayer().isCreative()) {
+        if (event.getPlayer().level.isClientSide && !event.getPlayer().isCreative()) {
             if (ClientSetup.canUseItem.containsKey(event.getPlayer().getMainHandItem().getItem().getRegistryName())) {
                 Map<Class<?>, Integer> map = ClientSetup.canUseItem.get(event.getPlayer().getMainHandItem().getItem().getRegistryName());
                 if (map.containsKey(ExtendedHunterJobsEntityPlayer.class)) {
@@ -310,9 +299,8 @@ public class EventHandler {
     @SubscribeEvent
     public static void onUpdateMovement(LivingEvent.LivingUpdateEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-            if (canTeleportate && serverPlayer.isShiftKeyDown() && serverPlayer.level.getBlockState(serverPlayer.blockPosition().atY(serverPlayer.blockPosition().getY() - 1)).getBlock() instanceof ElevatorBlock elevatorBlock) {
+            if (serverPlayer.isShiftKeyDown() && serverPlayer.level.getBlockState(serverPlayer.blockPosition().atY(serverPlayer.blockPosition().getY() - 1)).getBlock() instanceof ElevatorBlock elevatorBlock) {
                 event.setCanceled(true);
-                canTeleportate = false;
                 elevatorBlock.downTeleport(serverPlayer);
             }
         }
@@ -353,7 +341,7 @@ public class EventHandler {
 
     @SubscribeEvent
     public static void onPlayerFinishUseItem(LivingEntityUseItemEvent.Finish event) {
-        if (event.getEntity() instanceof Player player && !player.level.isClientSide) {
+        if (event.getEntity() instanceof Player player) {
             ItemStack item = event.getItem();
             if (item.is(Items.MILK_BUCKET)) {
                 HydrationEntityPlayer.get().addHydration(3);
@@ -391,6 +379,7 @@ public class EventHandler {
             HydrationEntityPlayer.get().sync();
         }
     }
+
     public static void storeEntityData(String name, CompoundTag compound) {
         extendedEntityData.put(name, compound);
     }

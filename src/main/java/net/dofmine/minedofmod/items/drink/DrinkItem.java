@@ -33,22 +33,19 @@ public class DrinkItem extends Item {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand interactionHand) {
+        if (!HydrationEntityPlayer.get().needHydration()) {
+            return InteractionResultHolder.consume(player.getItemInHand(interactionHand));
+        }
         return ItemUtils.startUsingInstantly(level, player, interactionHand);
     }
 
     @Override
     public ItemStack finishUsingItem(ItemStack itemStack, Level level, LivingEntity livingEntity) {
-        if (livingEntity instanceof ServerPlayer serverPlayer) {
-            CriteriaTriggers.CONSUME_ITEM.trigger(serverPlayer, itemStack);
-        }
-
-        if (!level.isClientSide && livingEntity instanceof Player player && !player.isCreative()) {
+        if (livingEntity instanceof Player player && !player.isCreative()) {
             HydrationEntityPlayer.get().addHydration(nbHydration);
-        }
-
-        if (livingEntity instanceof Player player && !player.getAbilities().instabuild) {
             itemStack.shrink(1);
+            player.getInventory().add(new ItemStack(Items.GLASS_BOTTLE));
         }
-        return itemStack.isEmpty() ? new ItemStack(Items.GLASS_BOTTLE) : itemStack;
+        return itemStack;
     }
 }

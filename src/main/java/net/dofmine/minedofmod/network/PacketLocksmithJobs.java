@@ -20,7 +20,7 @@ public class PacketLocksmithJobs {
     public static boolean handle(PacketLocksmithJobs packetJobs, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ExtendedLocksmithJobsEntityPlayer props = ExtendedLocksmithJobsEntityPlayer.get();
-            packetJobs.level = props.level;
+            props.level = packetJobs.level;
         });
         return true;
     }

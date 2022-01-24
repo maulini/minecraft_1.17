@@ -6,6 +6,7 @@ import net.dofmine.minedofmod.network.PacketHydration;
 import net.dofmine.minedofmod.setup.EventHandler;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.FloatTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
@@ -13,6 +14,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodData;
+import net.minecraft.world.level.GameRules;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
@@ -31,8 +34,8 @@ public class HydrationEntityPlayer implements ICapabilitySerializable {
     public int actualHydration;
     public int maxHydration;
     private int lastHydrationLevel = 20;
-    private float exhaustionLevel;
-    private int tickTimer;
+    public float exhaustionLevel;
+    public int tickTimer;
 
     public HydrationEntityPlayer(Player player, AttachCapabilitiesEvent attachCapabilitiesEvent) {
         this.player = player;
@@ -54,6 +57,8 @@ public class HydrationEntityPlayer implements ICapabilitySerializable {
 
         properties.put("Hydration", IntTag.valueOf(this.actualHydration));
         properties.put("MaxHydration", IntTag.valueOf(this.maxHydration));
+        properties.put("ExhaustionLevel", FloatTag.valueOf(this.maxHydration));
+        properties.put("TickTimer", IntTag.valueOf(this.tickTimer));
         EventHandler.storeEntityData(player.getDisplayName().getString(), properties);
         return properties;
     }
@@ -63,10 +68,14 @@ public class HydrationEntityPlayer implements ICapabilitySerializable {
         CompoundTag properties = (CompoundTag) nbt;
         this.actualHydration = properties.getInt("Hydration");
         this.maxHydration = properties.getInt("MaxHydration");
+        this.exhaustionLevel = properties.getFloat("ExhaustionLevel");
+        this.tickTimer = properties.getInt("TickTimer");
     }
 
-    public void drink(int p_38708_) {
+    public void addHydration(int p_38708_) {
         this.actualHydration = Math.min(p_38708_ + this.actualHydration, 20);
+        tickTimer = 0;
+        sync();
     }
 
     public static final void register(Player player, AttachCapabilitiesEvent attachCapabilitiesEvent) {
@@ -82,7 +91,7 @@ public class HydrationEntityPlayer implements ICapabilitySerializable {
     }
 
     public void sync() {
-        PacketHydration packetHydration = new PacketHydration(this.maxHydration, this.actualHydration);
+        PacketHydration packetHydration = new PacketHydration(this.maxHydration, this.actualHydration, this.exhaustionLevel, tickTimer);
         Networking.sendToServer(packetHydration);
 
         if (!player.level.isClientSide) {
@@ -93,23 +102,23 @@ public class HydrationEntityPlayer implements ICapabilitySerializable {
     public void tick(Player player) {
         Difficulty difficulty = player.level.getDifficulty();
         this.lastHydrationLevel = this.actualHydration;
-        if (this.exhaustionLevel > 2.0F) {
-            this.exhaustionLevel -= 2.0F;
+        if (this.exhaustionLevel >= 4.0F) {
+            this.exhaustionLevel -= 4.0F;
             if (difficulty != Difficulty.PEACEFUL) {
                 this.actualHydration = Math.max(this.actualHydration - 1, 0);
             }
         }
-        if (player.isHurt() && this.actualHydration >= 20) {
-            ++this.tickTimer;
-            if (this.tickTimer >= 10) {
-                float f = Math.min(this.actualHydration, 6.0F);
-                this.addExhaustion(f);
-                this.tickTimer = 0;
-            }
-        } else if (this.actualHydration >= 18 && player.isHurt()) {
+        boolean flag = player.level.getGameRules().getBoolean(GameRules.RULE_NATURAL_REGENERATION);
+        if (flag && actualHydration >= 16 && player.isHurt()) {
             ++this.tickTimer;
             if (this.tickTimer >= 80) {
                 this.addExhaustion(6.0F);
+                this.tickTimer = 0;
+            }
+        }else if (flag && actualHydration > 0) {
+            ++this.tickTimer;
+            if (this.tickTimer >= 800) {
+                this.addExhaustion(2.0F);
                 this.tickTimer = 0;
             }
         } else if (this.actualHydration <= 0) {
@@ -122,11 +131,7 @@ public class HydrationEntityPlayer implements ICapabilitySerializable {
                 this.tickTimer = 0;
             }
         } else {
-            ++this.tickTimer;
-            if (this.tickTimer >= 24_000) {
-                this.addExhaustion(2.0F);
-                this.tickTimer = 0;
-            }
+            this.tickTimer = 0;
         }
         sync();
     }
@@ -144,13 +149,4 @@ public class HydrationEntityPlayer implements ICapabilitySerializable {
         return this.actualHydration;
     }
 
-    public void addHydration(int hydration) {
-        if (needHydration()) {
-            this.actualHydration += hydration;
-            if (actualHydration > maxHydration) {
-                actualHydration = maxHydration;
-            }
-        }
-        this.sync();
-    }
 }

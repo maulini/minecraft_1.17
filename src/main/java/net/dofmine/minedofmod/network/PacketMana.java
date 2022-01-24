@@ -23,8 +23,8 @@ public class PacketMana {
         ctx.get().enqueueWork(() -> {
             ExtendedEntityPlayer props = ExtendedEntityPlayer
                     .get();
-            packetMana.max = props.maxMana;
-            packetMana.mana = props.mana;
+            props.maxMana = packetMana.max;
+            props.mana = packetMana.mana;
         });
         return true;
     }
