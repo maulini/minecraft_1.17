@@ -1,7 +1,7 @@
 package net.dofmine.minedofmod.effects.custom;
 
 import net.dofmine.minedofmod.effects.ModEffect;
-import net.dofmine.minedofmod.job.HydrationEntityPlayer;
+import net.dofmine.minedofmod.job.client.HydrationEntityPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,7 +22,7 @@ public class ThirstEffect extends MobEffect {
     public void applyEffectTick(LivingEntity livingEntity, int p_19468_) {
         if (this == ModEffect.THIRST.get() && livingEntity instanceof Player player) {
             if (!player.isCreative()) {
-                HydrationEntityPlayer.get().addExhaustion(0.005F * (float)(p_19468_ + 1));
+                HydrationEntityPlayer.get(player).addExhaustion(0.005F * (float)(p_19468_ + 1));
             }
         }
     }

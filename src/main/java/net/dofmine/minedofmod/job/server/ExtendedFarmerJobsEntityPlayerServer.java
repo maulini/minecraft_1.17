@@ -1,11 +1,9 @@
-package net.dofmine.minedofmod.job;
+package net.dofmine.minedofmod.job.server;
 
 import com.google.common.collect.ImmutableMap;
 import net.dofmine.minedofmod.MinedofMod;
 import net.dofmine.minedofmod.network.Networking;
-import net.dofmine.minedofmod.network.PacketHunterJobs;
-import net.dofmine.minedofmod.setup.ClientSetup;
-import net.dofmine.minedofmod.setup.EventHandler;
+import net.dofmine.minedofmod.network.PacketFarmerJobs;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
@@ -13,20 +11,25 @@ import net.minecraft.nbt.LongTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-public class ExtendedHunterJobsEntityPlayer implements ICapabilitySerializable {
+public class ExtendedFarmerJobsEntityPlayerServer implements ICapabilitySerializable {
 
-    public final static ResourceLocation EXT_PROP_NAME = new ResourceLocation(MinedofMod.MODS_ID, "extpropplayerhunterjobs");
-    private Map<Integer, Long> xpByLvl = new ImmutableMap.Builder() //
+    public final static ResourceLocation EXT_PROP_NAME = new ResourceLocation(MinedofMod.MODS_ID, "extpropplayerfarmerjobs_server");
+    private final Map<Integer, Long> xpByLvl = new ImmutableMap.Builder<Integer, Long>() //
             .put(1, 100L) //
             .put(2, 250L) //
             .put(3, 500L) //
@@ -50,38 +53,47 @@ public class ExtendedHunterJobsEntityPlayer implements ICapabilitySerializable {
             .build();
 
     private final Player player;
-    protected static AttachCapabilitiesEvent attachCapabilitiesEvent;
+    protected static AttachCapabilitiesEvent<Entity> attachCapabilitiesEvent;
     public long xp;
     public long maxXp;
     public int level;
     public int maxLevel;
+    // Directly reference a log4j logger.
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static LazyOptional<ExtendedFarmerJobsEntityPlayerServer> lazyOptional;
+    public static Capability<ExtendedFarmerJobsEntityPlayerServer> FARMER_JOBS = CapabilityManager.get(new CapabilityToken<>() {
+        @Override
+        public String toString() {
+            return EXT_PROP_NAME.toString();
+        }
+    });
 
-    public ExtendedHunterJobsEntityPlayer(Player player, AttachCapabilitiesEvent attachCapabilitiesEvent) {
+    public ExtendedFarmerJobsEntityPlayerServer(Player player, AttachCapabilitiesEvent<Entity> attachCapabilitiesEvent) {
         this.xp = 0;
         this.level = 1;
         this.maxLevel = 20;
         this.maxXp = 100;
         this.player = player;
-        this.attachCapabilitiesEvent = attachCapabilitiesEvent;
+        ExtendedFarmerJobsEntityPlayerServer.attachCapabilitiesEvent = attachCapabilitiesEvent;
         attachCapabilitiesEvent.addCapability(EXT_PROP_NAME, this);
+        attachCapabilitiesEvent.addListener(() -> lazyOptional.invalidate());
     }
 
-    public static final void register(Player player, AttachCapabilitiesEvent attachCapabilitiesEvent) {
-        new ExtendedHunterJobsEntityPlayer(player, attachCapabilitiesEvent);
+    public static final void register(Player player, AttachCapabilitiesEvent<Entity> attachCapabilitiesEvent) {
+        ExtendedFarmerJobsEntityPlayerServer farmer = new ExtendedFarmerJobsEntityPlayerServer(player, attachCapabilitiesEvent);
+        lazyOptional = LazyOptional.of(() -> farmer);
     }
 
-    public static final ExtendedHunterJobsEntityPlayer get() {
-        return attachCapabilitiesEvent == null ? null : (ExtendedHunterJobsEntityPlayer) attachCapabilitiesEvent.getCapabilities().get(EXT_PROP_NAME);
-    }
-
-    public void setLevel(int level) {
-        this.level = level;
-        sync();
+    public static final ExtendedFarmerJobsEntityPlayerServer get(Player player) {
+        return player.getCapability(FARMER_JOBS).orElseGet(null);
     }
 
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        if (cap == FARMER_JOBS) {
+            return lazyOptional.cast();
+        }
         return LazyOptional.empty();
     }
 
@@ -91,8 +103,7 @@ public class ExtendedHunterJobsEntityPlayer implements ICapabilitySerializable {
 
         properties.put("xp", LongTag.valueOf(this.xp));
         properties.put("level", IntTag.valueOf(this.level));
-        properties.put("maxXp", LongTag.valueOf(this.maxXp));
-        EventHandler.storeEntityData(player.getDisplayName().getString(), properties);
+        properties.put("maxXp", LongTag.valueOf(this.maxLevel));
         return properties;
     }
 
@@ -119,15 +130,12 @@ public class ExtendedHunterJobsEntityPlayer implements ICapabilitySerializable {
     }
 
     public void sync() {
-        PacketHunterJobs packetJobs = new PacketHunterJobs(this.xp, this.level, this.maxXp);
-        Networking.sendToServer(packetJobs);
-
-        if (!player.level.isClientSide) {
-            Networking.sendToClient(packetJobs, (ServerPlayer) player);
-        }
+        PacketFarmerJobs packetJobs = new PacketFarmerJobs(this.xp, this.level, this.maxXp);
+        Networking.sendToClient(packetJobs, (ServerPlayer) player);
     }
 
     public long getXp() {
         return this.xp;
     }
+
 }

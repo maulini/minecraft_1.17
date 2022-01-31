@@ -1,6 +1,5 @@
 package net.dofmine.minedofmod.items.tools;
 
-import net.dofmine.minedofmod.job.ExtendedEntityPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;

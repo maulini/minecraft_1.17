@@ -4,7 +4,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.dofmine.minedofmod.MinedofMod;
 import net.dofmine.minedofmod.effects.ModEffect;
-import net.dofmine.minedofmod.job.HydrationEntityPlayer;
+import net.dofmine.minedofmod.job.client.ExtendedHunterJobsEntityPlayer;
+import net.dofmine.minedofmod.job.client.HydrationEntityPlayer;
+import net.dofmine.minedofmod.utils.JobsUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.resources.ResourceLocation;
@@ -20,6 +22,7 @@ public class HydrationBar extends Gui {
     public HydrationBar(Minecraft minecraft, PoseStack matrixStack) {
         super(minecraft);
         RenderSystem.setShaderTexture(0, HYDRATION);
+        HydrationEntityPlayer hydrationEntityPlayer = (HydrationEntityPlayer) JobsUtil.getAllCapabilitiesForLocalPlayer(Minecraft.getInstance().player).stream().filter(iCapabilityProvider -> iCapabilityProvider instanceof HydrationEntityPlayer).findFirst().get();
         matrixStack.pushPose();
         matrixStack.scale(1.0f, 1.0f, 1.0f);
         int yScreenPosition = Minecraft.getInstance().getWindow().getGuiScaledHeight() - 49;
@@ -27,7 +30,6 @@ public class HydrationBar extends Gui {
             yScreenPosition -= 10;
         }
         renderHydrationBar(matrixStack, yScreenPosition);
-        HydrationEntityPlayer hydrationEntityPlayer = HydrationEntityPlayer.get();
         renderHydrationByLevel(hydrationEntityPlayer.actualHydration, matrixStack, minecraft.player, yScreenPosition + 1);
         matrixStack.popPose();
     }

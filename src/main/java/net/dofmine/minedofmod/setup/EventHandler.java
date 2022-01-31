@@ -8,12 +8,14 @@ import net.dofmine.minedofmod.effects.ModEffect;
 import net.dofmine.minedofmod.items.ModArmorMaterial;
 import net.dofmine.minedofmod.items.ModItems;
 import net.dofmine.minedofmod.items.backpack.VacuumBackPack;
-import net.dofmine.minedofmod.job.*;
+import net.dofmine.minedofmod.job.client.*;
+import net.dofmine.minedofmod.job.server.*;
 import net.dofmine.minedofmod.network.*;
 import net.dofmine.minedofmod.screen.HydrationBar;
 import net.dofmine.minedofmod.screen.JobsScreen;
 import net.dofmine.minedofmod.screen.ManaBar;
 import net.dofmine.minedofmod.tileentity.Spells;
+import net.dofmine.minedofmod.utils.JobsUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.TextComponent;
@@ -35,8 +37,11 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.common.capabilities.CapabilityDispatcher;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -51,16 +56,17 @@ import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Function;
 
 @Mod.EventBusSubscriber(modid = MinedofMod.MODS_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class EventHandler {
 
-    private static final Map<String, CompoundTag> extendedEntityData = new HashMap<String, CompoundTag>();
     // Directly reference a log4j logger.
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -77,7 +83,10 @@ public class EventHandler {
     public static void playerTickEvent(TickEvent.PlayerTickEvent event) {
         Player player = event.player;
         if (player.level.isClientSide) {
-            HydrationEntityPlayer.get().tick(player);
+            HydrationEntityPlayer hydrationEntityPlayer = (HydrationEntityPlayer) JobsUtil.getAllCapabilities(player).stream().filter(iCapabilityProvider -> iCapabilityProvider instanceof HydrationEntityPlayer).findFirst().get();
+            if (hydrationEntityPlayer != null) {
+                hydrationEntityPlayer.tick(player);
+            }
         }
         if (!player.getInventory().getArmor(0).isEmpty()) {
             if (((ArmorItem) player.getInventory().getArmor(0).getItem()).getMaterial().equals(ModArmorMaterial.GOD)) {
@@ -94,31 +103,98 @@ public class EventHandler {
     @SubscribeEvent
     public static void entity(final AttachCapabilitiesEvent<Entity> event) {
         if (event.getObject() instanceof Player player) {
-            if (ExtendedEntityPlayer.get() == null) {
-                ExtendedEntityPlayer.register(player, event);
-            }
-            if (ExtendedMinerJobsEntityPlayer.get() == null) {
-                ExtendedMinerJobsEntityPlayer.register(player, event);
-            }
-            if (ExtendedFarmerJobsEntityPlayer.get() == null) {
-                ExtendedFarmerJobsEntityPlayer.register(player, event);
-            }
-            if (ExtendedLocksmithJobsEntityPlayer.get() == null) {
-                ExtendedLocksmithJobsEntityPlayer.register(player, event);
-            }
-            if (ExtendedWizardJobsEntityPlayer.get() == null) {
-                ExtendedWizardJobsEntityPlayer.register(player, event);
-            }
-            if (ExtendedHunterJobsEntityPlayer.get() == null) {
-                ExtendedHunterJobsEntityPlayer.register(player, event);
-            }
-            if (HydrationEntityPlayer.get() == null) {
-                HydrationEntityPlayer.register(player, event);
+            if (player.level.isClientSide) {
+                if (player.getCapability(ExtendedMinerJobsEntityPlayer.MINER_JOBS).orElse(null) == null) {
+                    ExtendedMinerJobsEntityPlayer.register(player, event);
+                }
+                if (player.getCapability(ExtendedEntityPlayer.WIZARD_JOBS).orElse(null) == null) {
+                    ExtendedEntityPlayer.register(player, event);
+                }
+                if (player.getCapability(ExtendedFarmerJobsEntityPlayer.FARMER_JOBS).orElse(null) == null) {
+                    ExtendedFarmerJobsEntityPlayer.register(player, event);
+                }
+                if (player.getCapability(ExtendedLocksmithJobsEntityPlayer.LOCKSMITH_JOBS).orElse(null) == null) {
+                    ExtendedLocksmithJobsEntityPlayer.register(player, event);
+                }
+                if (player.getCapability(ExtendedWizardJobsEntityPlayer.WIZARD_JOBS).orElse(null) == null) {
+                    ExtendedWizardJobsEntityPlayer.register(player, event);
+                }
+                if (player.getCapability(ExtendedHunterJobsEntityPlayer.HUNTER_JOBS).orElse(null) == null) {
+                    ExtendedHunterJobsEntityPlayer.register(player, event);
+                }
+                if (player.getCapability(HydrationEntityPlayer.HYDRATION).orElse(null) == null) {
+                    HydrationEntityPlayer.register(player, event);
+                }
+            }else {
+                if (player.getCapability(ExtendedMinerJobsEntityPlayerServer.MINER_JOBS).orElse(null) == null) {
+                    ExtendedMinerJobsEntityPlayerServer.register(player, event);
+                }
+                if (player.getCapability(ExtendedEntityPlayerServer.WIZARD_JOBS).orElse(null) == null) {
+                    ExtendedEntityPlayerServer.register(player, event);
+                }
+                if (player.getCapability(ExtendedFarmerJobsEntityPlayerServer.FARMER_JOBS).orElse(null) == null) {
+                    ExtendedFarmerJobsEntityPlayerServer.register(player, event);
+                }
+                if (player.getCapability(ExtendedLocksmithJobsEntityPlayerServer.LOCKSMITH_JOBS).orElse(null) == null) {
+                    ExtendedLocksmithJobsEntityPlayerServer.register(player, event);
+                }
+                if (player.getCapability(ExtendedWizardJobsEntityPlayerServer.WIZARD_JOBS).orElse(null) == null) {
+                    ExtendedWizardJobsEntityPlayerServer.register(player, event);
+                }
+                if (player.getCapability(ExtendedHunterJobsEntityPlayerServer.HUNTER_JOBS).orElse(null) == null) {
+                    ExtendedHunterJobsEntityPlayerServer.register(player, event);
+                }
+                if (player.getCapability(HydrationEntityPlayerServer.HYDRATION).orElse(null) == null) {
+                    HydrationEntityPlayerServer.register(player, event);
+                }
             }
         }
         if (event.getObject() instanceof ServerPlayer player) {
-            Spells.serverLevel = (ServerLevel) player.level;
+            Spells.serverPlayer = player;
             ClientSetup.serverLevel = (ServerLevel) player.level;
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerDeathClone(PlayerEvent.Clone event) {
+        if (event.isWasDeath()) {
+            Class<ServerPlayer> clazz = (Class<ServerPlayer>) event.getOriginal().getClass();
+            try {
+                Method method = clazz.getSuperclass().getSuperclass().getSuperclass().getSuperclass().getDeclaredMethod("getCapabilities");
+                method.setAccessible(true);
+                CapabilityDispatcher capabilityDispatcher = (CapabilityDispatcher) method.invoke(event.getOriginal());
+                Field field = capabilityDispatcher.getClass().getDeclaredField("caps");
+                field.setAccessible(true);
+                ICapabilityProvider[] allCapabilities = (ICapabilityProvider[]) field.get(capabilityDispatcher);
+                for (int i = 0; i < allCapabilities.length; i++) {
+                    if (allCapabilities[i] instanceof ExtendedFarmerJobsEntityPlayerServer farmer) {
+                        ExtendedFarmerJobsEntityPlayerServer farmerNew = ExtendedFarmerJobsEntityPlayerServer.get(event.getPlayer());
+                        farmerNew.level = farmer.level;
+                        farmerNew.maxXp = farmer.maxXp;
+                        farmerNew.xp = farmer.xp;
+                    } else if (allCapabilities[i] instanceof ExtendedEntityPlayerServer wizard) {
+                        ExtendedEntityPlayerServer farmerNew = ExtendedEntityPlayerServer.get(event.getPlayer());
+                        farmerNew.mana = wizard.mana;
+                    } else if (allCapabilities[i] instanceof ExtendedHunterJobsEntityPlayerServer hunter) {
+                        ExtendedHunterJobsEntityPlayerServer hunterNew = ExtendedHunterJobsEntityPlayerServer.get(event.getPlayer());
+                        hunterNew.level = hunter.level;
+                        hunterNew.maxXp = hunter.maxXp;
+                        hunterNew.xp = hunter.xp;
+                    } else if (allCapabilities[i] instanceof ExtendedLocksmithJobsEntityPlayerServer locksmith) {
+                        ExtendedLocksmithJobsEntityPlayerServer locksmithNew = ExtendedLocksmithJobsEntityPlayerServer.get(event.getPlayer());
+                        locksmithNew.level = locksmith.level;
+                    } else if (allCapabilities[i] instanceof ExtendedMinerJobsEntityPlayerServer miner) {
+                        ExtendedMinerJobsEntityPlayerServer minerNew = ExtendedMinerJobsEntityPlayerServer.get(event.getPlayer());
+                        minerNew.level = miner.level;
+                        minerNew.maxXp = miner.maxXp;
+                        minerNew.xp = miner.xp;
+                    } else if (allCapabilities[i] instanceof HydrationEntityPlayerServer) {
+                        HydrationEntityPlayerServer.get(event.getPlayer()).actualHydration = 20;
+                    }
+                }
+            } catch (NoSuchMethodException | NoSuchFieldException | IllegalAccessException | InvocationTargetException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -161,28 +237,28 @@ public class EventHandler {
             if (ClientSetup.canUseItem.containsKey(event.getItemStack().getItem().getRegistryName())) {
                 Map<Class<?>, Integer> map = ClientSetup.canUseItem.get(event.getItemStack().getItem().getRegistryName());
                 if (map.containsKey(ExtendedFarmerJobsEntityPlayer.class)) {
-                    ExtendedFarmerJobsEntityPlayer farmer = ExtendedFarmerJobsEntityPlayer.get();
+                    ExtendedFarmerJobsEntityPlayer farmer = ExtendedFarmerJobsEntityPlayer.get(event.getPlayer());
                     Integer level = map.get(ExtendedFarmerJobsEntityPlayer.class);
                     if (farmer.level < level) {
                         event.getEntity().sendMessage(new TextComponent(String.format("Your farmer level must be level %d to use %s", level, event.getItemStack().getItem().getRegistryName())), UUID.randomUUID());
                         event.setCanceled(true);
                     }
                 } else if (map.containsKey(ExtendedMinerJobsEntityPlayer.class)) {
-                    ExtendedMinerJobsEntityPlayer miner = ExtendedMinerJobsEntityPlayer.get();
+                    ExtendedMinerJobsEntityPlayer miner = ExtendedMinerJobsEntityPlayer.get(event.getPlayer());
                     Integer level = map.get(ExtendedMinerJobsEntityPlayer.class);
                     if (miner.level < level) {
                         event.getEntity().sendMessage(new TextComponent(String.format("Your miner level must be level %d to use %s", level, event.getItemStack().getItem().getRegistryName())), UUID.randomUUID());
                         event.setCanceled(true);
                     }
                 } else if (map.containsKey(ExtendedLocksmithJobsEntityPlayer.class)) {
-                    ExtendedLocksmithJobsEntityPlayer locksmith = ExtendedLocksmithJobsEntityPlayer.get();
+                    ExtendedLocksmithJobsEntityPlayer locksmith = ExtendedLocksmithJobsEntityPlayer.get(event.getPlayer());
                     Integer level = map.get(ExtendedLocksmithJobsEntityPlayer.class);
                     if (locksmith.level < level) {
                         event.getEntity().sendMessage(new TextComponent(String.format("Your locksmith level must be level %d to use %s", level, event.getItemStack().getItem().getRegistryName())), UUID.randomUUID());
                         event.setCanceled(true);
                     }
                 } else if (map.containsKey(ExtendedHunterJobsEntityPlayer.class)) {
-                    ExtendedHunterJobsEntityPlayer hunter = ExtendedHunterJobsEntityPlayer.get();
+                    ExtendedHunterJobsEntityPlayer hunter = ExtendedHunterJobsEntityPlayer.get(event.getPlayer());
                     Integer level = map.get(ExtendedHunterJobsEntityPlayer.class);
                     if (hunter.level < level) {
                         event.getEntity().sendMessage(new TextComponent(String.format("Your hunter level must be level %d to use %s", level, event.getItemStack().getItem().getRegistryName())), UUID.randomUUID());
@@ -191,7 +267,7 @@ public class EventHandler {
                 }
             }
             Block block = event.getPlayer().level.getBlockState(event.getPos()).getBlock();
-            ExtendedMinerJobsEntityPlayer minerJob = ExtendedMinerJobsEntityPlayer.get();
+            ExtendedMinerJobsEntityPlayer minerJob = ExtendedMinerJobsEntityPlayer.get(event.getPlayer());
             if (block.equals(ModBlocks.RUBY_ORE.get()) && minerJob.level < 10) {
                 event.setCanceled(true);
                 event.getPlayer().sendMessage(new TextComponent(String.format("Impossible to break this block, miner level must be 10 but your are level %d", minerJob.level)), UUID.randomUUID());
@@ -211,17 +287,14 @@ public class EventHandler {
     @SubscribeEvent
     public static void onEntityDeath(LivingDeathEvent event) {
         if (event.getEntity().level.isClientSide) {
-            if (event.getSource().getEntity() instanceof Player) {
+            if (event.getSource().getEntity() instanceof Player player) {
                 if (event.getEntity() instanceof Ravager) {
-                    ExtendedEntityPlayer.get().addMana(2);
+                    ExtendedEntityPlayer.get(player).addMana(2);
                 }
                 if (ClientSetup.xpByEntityHunter.containsKey(event.getEntity().getType())) {
-                    ExtendedHunterJobsEntityPlayer hunter = ExtendedHunterJobsEntityPlayer.get();
+                    ExtendedHunterJobsEntityPlayer hunter = (ExtendedHunterJobsEntityPlayer) JobsUtil.getAllCapabilities(player).stream().filter(iCapabilityProvider -> iCapabilityProvider instanceof  ExtendedHunterJobsEntityPlayer).findFirst().get();
                     hunter.addXp(ClientSetup.xpByEntityHunter.get(event.getEntity().getType()).apply(hunter.level));
                 }
-            }
-            if (event.getEntity() instanceof Player) {
-                HydrationEntityPlayer.get().addHydration(20);
             }
         }
     }
@@ -239,7 +312,7 @@ public class EventHandler {
             if (ClientSetup.canUseItem.containsKey(event.getPlayer().getMainHandItem().getItem().getRegistryName())) {
                 Map<Class<?>, Integer> map = ClientSetup.canUseItem.get(event.getPlayer().getMainHandItem().getItem().getRegistryName());
                 if (map.containsKey(ExtendedHunterJobsEntityPlayer.class)) {
-                    ExtendedHunterJobsEntityPlayer hunter = ExtendedHunterJobsEntityPlayer.get();
+                    ExtendedHunterJobsEntityPlayer hunter = ExtendedHunterJobsEntityPlayer.get(event.getPlayer());
                     Integer level = map.get(ExtendedHunterJobsEntityPlayer.class);
                     if (hunter.level < level) {
                         event.getEntity().sendMessage(new TextComponent(String.format("Your hunter level must be level %d to use %s", level, event.getPlayer().getMainHandItem().getItem().getRegistryName())), UUID.randomUUID());
@@ -248,7 +321,7 @@ public class EventHandler {
                 }
             }
             if (!event.getPlayer().isCreative() && ClientSetup.canAttackEntity.containsKey(event.getTarget().getType())) {
-                ExtendedHunterJobsEntityPlayer hunter = ExtendedHunterJobsEntityPlayer.get();
+                ExtendedHunterJobsEntityPlayer hunter = ExtendedHunterJobsEntityPlayer.get(event.getPlayer());
                 if (hunter.level < ClientSetup.canAttackEntity.get(event.getTarget().getType())) {
                     event.getPlayer().sendMessage(new TextComponent(String.format("Your hunter level must be %d to can attack %s", ClientSetup.canAttackEntity.get(event.getTarget().getType()) ,event.getTarget().getType())), UUID.randomUUID());
                     event.setCanceled(true);
@@ -260,7 +333,7 @@ public class EventHandler {
     @SubscribeEvent
     public static void onPlayerCraft(PlayerEvent.ItemCraftedEvent event) {
         if (ClientSetup.xpByItemFarmer.containsKey(event.getCrafting().getItem())) {
-            ExtendedFarmerJobsEntityPlayer farmer = ExtendedFarmerJobsEntityPlayer.get();
+            ExtendedFarmerJobsEntityPlayer farmer = ExtendedFarmerJobsEntityPlayer.get(event.getPlayer());
             farmer.addXp(ClientSetup.xpByItemFarmer.get(event.getCrafting().getItem()).apply(farmer.level));
         }
         for (int i = 0; i < event.getInventory().getContainerSize(); i++) {
@@ -277,7 +350,7 @@ public class EventHandler {
     @SubscribeEvent
     public static void onPlayerSmelted(PlayerEvent.ItemSmeltedEvent event) {
         if (ClientSetup.xpByItemFarmer.containsKey(event.getSmelting().getItem())) {
-            ExtendedFarmerJobsEntityPlayer farmer = ExtendedFarmerJobsEntityPlayer.get();
+            ExtendedFarmerJobsEntityPlayer farmer = ExtendedFarmerJobsEntityPlayer.get(event.getPlayer());
             farmer.addXp(ClientSetup.xpByItemFarmer.get(event.getSmelting().getItem()).apply(farmer.level));
         }
     }
@@ -291,9 +364,6 @@ public class EventHandler {
 
     @SubscribeEvent
     public static void onPlayerSleep(PlayerSleepInBedEvent event) {
-        if (event.getEntity().level.isClientSide) {
-            ExtendedEntityPlayer.get().spend(-10);
-        }
     }
 
     @SubscribeEvent
@@ -305,7 +375,7 @@ public class EventHandler {
             }
         }
     }
-    
+
     @SubscribeEvent
     public static void onPlayerPickupItem(EntityItemPickupEvent event) {
         Optional<ItemStack> vacuumItemStack = event.getPlayer().getInventory().items.stream().filter(itemStack -> {
@@ -344,12 +414,12 @@ public class EventHandler {
         if (event.getEntity() instanceof Player player) {
             ItemStack item = event.getItem();
             if (item.is(Items.MILK_BUCKET)) {
-                HydrationEntityPlayer.get().addHydration(3);
+                HydrationEntityPlayer.get(player).addHydration(3);
                 player.addEffect(new MobEffectInstance(ModEffect.THIRST.get(), 300, 0));
             }else if (item.is(Items.POTION)) {
                 Potion potion = PotionUtils.getPotion(item);
                 if (potion.equals(Potions.WATER)) {
-                    HydrationEntityPlayer.get().addHydration(6);
+                    HydrationEntityPlayer.get(player).addHydration(6);
                     player.addEffect(new MobEffectInstance(ModEffect.THIRST.get(), 600, 0));
                 }
             }
@@ -358,34 +428,35 @@ public class EventHandler {
 
     @SubscribeEvent
     public static void onEntityJoinWorld(EntityJoinWorldEvent event) {
-        if (!event.getEntity().level.isClientSide && event.getEntity() instanceof Player player) {
-            CompoundTag playerData = getEntityData(player.getDisplayName().getString());
-            if (playerData != null) {
-                ExtendedEntityPlayer.get().deserializeNBT(playerData);
-                ExtendedMinerJobsEntityPlayer.get().deserializeNBT(playerData);
-                ExtendedFarmerJobsEntityPlayer.get().deserializeNBT(playerData);
-                ExtendedLocksmithJobsEntityPlayer.get().deserializeNBT(playerData);
-                ExtendedWizardJobsEntityPlayer.get().deserializeNBT(playerData);
-                ExtendedHunterJobsEntityPlayer.get().deserializeNBT(playerData);
-                HydrationEntityPlayer.get().deserializeNBT(playerData);
+        if (event.getEntity() instanceof ServerPlayer player) {
+            ExtendedFarmerJobsEntityPlayerServer farmer = ExtendedFarmerJobsEntityPlayerServer.get(player);
+            if (farmer != null) {
+                farmer.sync();
             }
-
-            ExtendedEntityPlayer.get().sync();
-            ExtendedMinerJobsEntityPlayer.get().sync();
-            ExtendedFarmerJobsEntityPlayer.get().sync();
-            ExtendedLocksmithJobsEntityPlayer.get().sync();
-            ExtendedHunterJobsEntityPlayer.get().sync();
-            ExtendedWizardJobsEntityPlayer.get().sync();
-            HydrationEntityPlayer.get().sync();
+            ExtendedEntityPlayerServer wizard = ExtendedEntityPlayerServer.get(player);
+            if (wizard != null) {
+                wizard.sync();
+            }
+            ExtendedMinerJobsEntityPlayerServer miner = ExtendedMinerJobsEntityPlayerServer.get(player);
+            if (miner != null) {
+                miner.sync();
+            }
+            ExtendedLocksmithJobsEntityPlayerServer locksmith = ExtendedLocksmithJobsEntityPlayerServer.get(player);
+            if (locksmith != null) {
+                locksmith.sync();
+            }
+            ExtendedWizardJobsEntityPlayerServer wizardJobs = ExtendedWizardJobsEntityPlayerServer.get(player);
+            if (wizardJobs != null) {
+                wizardJobs.sync();
+            }
+            ExtendedHunterJobsEntityPlayerServer hunter = ExtendedHunterJobsEntityPlayerServer.get(player);
+            if (hunter != null) {
+                hunter.sync();
+            }
+            HydrationEntityPlayerServer hydration = HydrationEntityPlayerServer.get(player);
+            if (hydration != null) {
+                hydration.sync();
+            }
         }
     }
-
-    public static void storeEntityData(String name, CompoundTag compound) {
-        extendedEntityData.put(name, compound);
-    }
-
-    public static CompoundTag getEntityData(String name) {
-        return extendedEntityData.remove(name);
-    }
-
 }

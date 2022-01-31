@@ -1,47 +1,56 @@
-package net.dofmine.minedofmod.job;
+package net.dofmine.minedofmod.job.client;
 
 import net.dofmine.minedofmod.MinedofMod;
 import net.dofmine.minedofmod.network.Networking;
 import net.dofmine.minedofmod.network.PacketMana;
-import net.dofmine.minedofmod.setup.ClientSetup;
-import net.dofmine.minedofmod.setup.EventHandler;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
-import org.spongepowered.asm.mixin.injection.At;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ExtendedEntityPlayer implements ICapabilitySerializable {
 
-    public final static ResourceLocation EXT_PROP_NAME = new ResourceLocation(MinedofMod.MODS_ID, "extpropplayer");
+    public final static ResourceLocation EXT_PROP_NAME = new ResourceLocation(MinedofMod.MODS_ID, "extpropplayer_client");
 
     private final Player player;
-    private static AttachCapabilitiesEvent<Player> attachCapabilitiesEvent;
 
     public int mana;
     public int maxMana;
+    private static LazyOptional<ExtendedEntityPlayer> lazyOptional;
+    public static Capability<ExtendedEntityPlayer> WIZARD_JOBS = CapabilityManager.get(new CapabilityToken<>() {
+        @Override
+        public String toString() {
+            return EXT_PROP_NAME.toString();
+        }
+    });
 
-    public ExtendedEntityPlayer(Player player, AttachCapabilitiesEvent attachCapabilitiesEvent) {
+    public ExtendedEntityPlayer(Player player, AttachCapabilitiesEvent<Entity> attachCapabilitiesEvent) {
         this.player = player;
         this.mana = 100;
         this.maxMana = 100;
-        this.attachCapabilitiesEvent = attachCapabilitiesEvent;
         attachCapabilitiesEvent.addCapability(EXT_PROP_NAME, this);
+        attachCapabilitiesEvent.addListener(() -> lazyOptional.invalidate());
     }
 
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        if (cap == WIZARD_JOBS) {
+            return lazyOptional.cast();
+        }
         return LazyOptional.empty();
     }
 
@@ -51,7 +60,6 @@ public class ExtendedEntityPlayer implements ICapabilitySerializable {
 
         properties.put("Mana", IntTag.valueOf(this.mana));
         properties.put("MaxMana", IntTag.valueOf(this.maxMana));
-        EventHandler.storeEntityData(player.getDisplayName().getString(), properties);
         return properties;
     }
 
@@ -62,12 +70,13 @@ public class ExtendedEntityPlayer implements ICapabilitySerializable {
         this.maxMana = properties.getInt("MaxMana");
     }
 
-    public static final void register(Player player, AttachCapabilitiesEvent attachCapabilitiesEvent) {
-        new ExtendedEntityPlayer(player, attachCapabilitiesEvent);
+    public static final void register(Player player, AttachCapabilitiesEvent<Entity> attachCapabilitiesEvent) {
+       ExtendedEntityPlayer wizard = new ExtendedEntityPlayer(player, attachCapabilitiesEvent);
+       lazyOptional = LazyOptional.of(() -> wizard);
     }
 
-    public static final ExtendedEntityPlayer get() {
-        return attachCapabilitiesEvent == null ? null : (ExtendedEntityPlayer)attachCapabilitiesEvent.getCapabilities().get(EXT_PROP_NAME);
+    public static final ExtendedEntityPlayer get(Player player) {
+        return player.getCapability(WIZARD_JOBS).orElse(null);
     }
 
     private static String getSaveKey(Player player) {
@@ -77,10 +86,6 @@ public class ExtendedEntityPlayer implements ICapabilitySerializable {
     public void sync() {
         PacketMana packetMoney = new PacketMana(this.maxMana, this.mana);
         Networking.sendToServer(packetMoney);
-
-        if (!player.level.isClientSide) {
-            Networking.sendToClient(packetMoney, (ServerPlayer) player);
-        }
     }
 
     public boolean spend(int amount) {
@@ -88,7 +93,7 @@ public class ExtendedEntityPlayer implements ICapabilitySerializable {
 
         if (sufficient) {
             this.mana -= amount;
-            ExtendedWizardJobsEntityPlayer.get().addXp(10);
+            ExtendedWizardJobsEntityPlayer.get(player).addXp(10);
             this.sync();
         } else {
             return false;

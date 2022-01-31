@@ -3,16 +3,13 @@ package net.dofmine.minedofmod.items.weapon;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import net.dofmine.minedofmod.items.ModItems;
-import net.dofmine.minedofmod.job.ExtendedEntityPlayer;
+import net.dofmine.minedofmod.job.client.ExtendedEntityPlayer;
 import net.dofmine.minedofmod.tileentity.MjollnirEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.stats.Stats;
-import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -23,16 +20,11 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.ThrownEnderpearl;
-import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
@@ -111,14 +103,14 @@ public class ThorHammer extends Item implements Vanishable {
                     && level.getBlockState(rightBlock).getBlock().equals(Blocks.QUARTZ_BLOCK) && level.getBlockState(leftBlock).getBlock().equals(Blocks.QUARTZ_BLOCK)
                     && level.getBlockState(torchBlockLeft).getBlock().equals(Blocks.TORCH) && level.getBlockState(torchBlockRight).getBlock().equals(Blocks.TORCH)) {
                 ItemEntity itemGod = new ItemEntity(level, firstBlock.getX(), firstBlock.getY(), firstBlock.getZ(), new ItemStack(ModItems.GOD_INGOT.get(), 1));
-                ExtendedEntityPlayer.get().addMana(10);
+                ExtendedEntityPlayer.get(context.getPlayer()).addMana(10);
                 level.addFreshEntity(itemGod);
                 context.getPlayer().getInventory().removeItem(context.getItemInHand());
             } else if (level.getBlockState(firstBlock).getBlock().equals(Blocks.QUARTZ_BLOCK)
                     && level.getBlockState(rightBlockZ).getBlock().equals(Blocks.QUARTZ_BLOCK) && level.getBlockState(leftBlockZ).getBlock().equals(Blocks.QUARTZ_BLOCK)
                     && level.getBlockState(torchBlockLeftZ).getBlock().equals(Blocks.TORCH) && level.getBlockState(torchBlockRightZ).getBlock().equals(Blocks.TORCH)) {
                 ItemEntity itemGod = new ItemEntity(level, firstBlock.getX(), firstBlock.getY(), firstBlock.getZ(), new ItemStack(ModItems.GOD_INGOT.get(), 1));
-                ExtendedEntityPlayer.get().addMana(10);
+                ExtendedEntityPlayer.get(context.getPlayer()).addMana(10);
                 level.addFreshEntity(itemGod);
                 context.getPlayer().getInventory().removeItem(context.getItemInHand());
             }

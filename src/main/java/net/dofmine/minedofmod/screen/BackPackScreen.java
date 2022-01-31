@@ -4,8 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.dofmine.minedofmod.MinedofMod;
 import net.dofmine.minedofmod.container.BackPackContainer;
-import net.dofmine.minedofmod.inventory.BackPackInventory;
-import net.dofmine.minedofmod.job.ExtendedHunterJobsEntityPlayer;
+import net.dofmine.minedofmod.job.client.ExtendedHunterJobsEntityPlayer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -42,7 +42,7 @@ public class BackPackScreen extends AbstractContainerScreen<BackPackContainer> {
 
     public BackPackScreen(BackPackContainer backPackContainer, Inventory inventory, Component component) {
         super(backPackContainer, inventory, component);
-        this.level = ExtendedHunterJobsEntityPlayer.get().level;
+        this.level = ExtendedHunterJobsEntityPlayer.get(Minecraft.getInstance().player).level;
     }
 
     @Override

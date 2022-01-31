@@ -1,12 +1,10 @@
-package net.dofmine.minedofmod.job;
+package net.dofmine.minedofmod.job.server;
 
 import com.google.common.collect.ImmutableMap;
 import net.dofmine.minedofmod.MinedofMod;
+import net.dofmine.minedofmod.job.client.ExtendedWizardJobsEntityPlayer;
 import net.dofmine.minedofmod.network.Networking;
-import net.dofmine.minedofmod.network.PacketFarmerJobs;
-import net.dofmine.minedofmod.network.PacketHunterJobs;
-import net.dofmine.minedofmod.setup.ClientSetup;
-import net.dofmine.minedofmod.setup.EventHandler;
+import net.dofmine.minedofmod.network.PacketWizardJobs;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
@@ -14,8 +12,11 @@ import net.minecraft.nbt.LongTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -24,10 +25,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-public class ExtendedFarmerJobsEntityPlayer implements ICapabilitySerializable {
+public class ExtendedWizardJobsEntityPlayerServer implements ICapabilitySerializable {
 
-    public final static ResourceLocation EXT_PROP_NAME = new ResourceLocation(MinedofMod.MODS_ID, "extpropplayerfarmerjobs");
-    private Map<Integer, Long> xpByLvl = new ImmutableMap.Builder() //
+    public final static ResourceLocation EXT_PROP_NAME = new ResourceLocation(MinedofMod.MODS_ID, "extpropplayerwizardjobs_server");
+    private Map<Integer, Long> xpByLvl = new ImmutableMap.Builder<Integer, Long>() //
             .put(1, 100L) //
             .put(2, 250L) //
             .put(3, 500L) //
@@ -51,33 +52,43 @@ public class ExtendedFarmerJobsEntityPlayer implements ICapabilitySerializable {
             .build();
 
     private final Player player;
-    protected static AttachCapabilitiesEvent attachCapabilitiesEvent;
     public long xp;
     public long maxXp;
     public int level;
     public int maxLevel;
+    private static LazyOptional<ExtendedWizardJobsEntityPlayerServer> lazyOptional;
+    public static Capability<ExtendedWizardJobsEntityPlayerServer> WIZARD_JOBS = CapabilityManager.get(new CapabilityToken<>() {
+        @Override
+        public String toString() {
+            return EXT_PROP_NAME.toString();
+        }
+    });
 
-    public ExtendedFarmerJobsEntityPlayer(Player player, AttachCapabilitiesEvent attachCapabilitiesEvent) {
+    public ExtendedWizardJobsEntityPlayerServer(Player player, AttachCapabilitiesEvent<Entity> attachCapabilitiesEvent) {
         this.xp = 0;
         this.level = 1;
         this.maxLevel = 20;
         this.maxXp = 100;
         this.player = player;
-        this.attachCapabilitiesEvent = attachCapabilitiesEvent;
         attachCapabilitiesEvent.addCapability(EXT_PROP_NAME, this);
+        attachCapabilitiesEvent.addListener(() -> lazyOptional.invalidate());
     }
 
-    public static final void register(Player player, AttachCapabilitiesEvent attachCapabilitiesEvent) {
-        new ExtendedFarmerJobsEntityPlayer(player, attachCapabilitiesEvent);
+    public static final void register(Player player, AttachCapabilitiesEvent<Entity> attachCapabilitiesEvent) {
+        ExtendedWizardJobsEntityPlayerServer wizard = new ExtendedWizardJobsEntityPlayerServer(player, attachCapabilitiesEvent);
+        lazyOptional = LazyOptional.of(() -> wizard);
     }
 
-    public static final ExtendedFarmerJobsEntityPlayer get() {
-        return attachCapabilitiesEvent == null ? null : (ExtendedFarmerJobsEntityPlayer) attachCapabilitiesEvent.getCapabilities().get(EXT_PROP_NAME);
+    public static final ExtendedWizardJobsEntityPlayerServer get(Player player) {
+        return player.getCapability(WIZARD_JOBS).orElse(null);
     }
 
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        if (cap == WIZARD_JOBS) {
+            return lazyOptional.cast();
+        }
         return LazyOptional.empty();
     }
 
@@ -87,8 +98,7 @@ public class ExtendedFarmerJobsEntityPlayer implements ICapabilitySerializable {
 
         properties.put("xp", LongTag.valueOf(this.xp));
         properties.put("level", IntTag.valueOf(this.level));
-        properties.put("maxXp", LongTag.valueOf(this.maxLevel));
-        EventHandler.storeEntityData(player.getDisplayName().getString(), properties);
+        properties.put("maxXp", LongTag.valueOf(this.maxXp));
         return properties;
     }
 
@@ -115,12 +125,8 @@ public class ExtendedFarmerJobsEntityPlayer implements ICapabilitySerializable {
     }
 
     public void sync() {
-        PacketFarmerJobs packetJobs = new PacketFarmerJobs(this.xp, this.level, this.maxXp);
-        Networking.sendToServer(packetJobs);
-
-        if (!player.level.isClientSide) {
-            Networking.sendToClient(packetJobs, (ServerPlayer) player);
-        }
+        PacketWizardJobs packetJobs = new PacketWizardJobs(this.xp, this.level, this.maxXp);
+        Networking.sendToClient(packetJobs, (ServerPlayer) player);
     }
 
     public long getXp() {

@@ -3,7 +3,7 @@ package net.dofmine.minedofmod.setup;
 import net.dofmine.minedofmod.MinedofMod;
 import net.dofmine.minedofmod.block.ModBlocks;
 import net.dofmine.minedofmod.items.ModItems;
-import net.dofmine.minedofmod.job.*;
+import net.dofmine.minedofmod.job.client.*;
 import net.dofmine.minedofmod.tileentity.MjollnirModel;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.ResourceLocation;
@@ -14,9 +14,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.event.*;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-@Mod.EventBusSubscriber(modid = MinedofMod.MODS_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = MinedofMod.MODS_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClientSetup {
     public static final Map<Item, Function<Integer, Long>> xpByBlockMiner = new HashMap<>();
     public static final Map<Item, Function<Integer, Long>> xpByBlockFarmer = new HashMap<>();
@@ -367,6 +367,16 @@ public class ClientSetup {
         addUseItem(ModItems.WATER_KEY.get().getRegistryName(), ExtendedLocksmithJobsEntityPlayer.class, 5);
         event.enqueueWork(() -> {
         });
+    }
+
+    @SubscribeEvent
+    public static void registerCapability(RegisterCapabilitiesEvent event) {
+        event.register(ExtendedFarmerJobsEntityPlayer.class);
+        event.register(ExtendedMinerJobsEntityPlayer.class);
+        event.register(ExtendedHunterJobsEntityPlayer.class);
+        event.register(ExtendedEntityPlayer.class);
+        event.register(ExtendedLocksmithJobsEntityPlayer.class);
+        event.register(HydrationEntityPlayer.class);
     }
 
     @SubscribeEvent

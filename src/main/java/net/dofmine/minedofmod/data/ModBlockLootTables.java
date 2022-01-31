@@ -16,6 +16,10 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
 import net.minecraftforge.registries.RegistryObject;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class ModBlockLootTables extends BlockLoot {
 
     @Override
@@ -36,14 +40,16 @@ public class ModBlockLootTables extends BlockLoot {
             return createOreDrop(ModBlocks.GOD_ORE.get(), ModBlocks.GOD_ORE.get().asItem());
         });
         this.add(Blocks.GRASS, block -> {
-           return createShearsDispatchTable(block, applyExplosionDecay(block, LootItem.lootTableItem(ModItems.TOMATO_SEEDS.get()).when(LootItemRandomChanceCondition.randomChance(0.125F)).apply(ApplyBonusCount.addUniformBonusCount(Enchantments.BLOCK_FORTUNE, 2))));
+           return createShearsDispatchTable(block, applyExplosionDecay(block, LootItem.lootTableItem(ModItems.TOMATO_SEEDS.get())
+                   .when(LootItemRandomChanceCondition.randomChance(0.125F))
+                   .apply(ApplyBonusCount.addUniformBonusCount(Enchantments.BLOCK_FORTUNE, 2))));
         });
 
         this.dropSelf(ModBlocks.LIGHTNING_CHANNELER.get());
         this.dropSelf(ModBlocks.CRAFTING_TABLE.get());
         this.dropSelf(ModBlocks.WATER_COLLECTOR.get());
         this.dropSelf(ModBlocks.ELEVATOR_BLOCK.get());
-        this.dropSelf(ModBlocks.SPECIAL_DOOR.get());
+        this.add(ModBlocks.SPECIAL_DOOR.get(), BlockLoot::createDoorTable);
         this.dropSelf(ModBlocks.GLOBE.get());
         this.dropSelf(ModBlocks.ORCHID.get());
         this.dropSelf(ModBlocks.REDWOOD_LOG.get());
@@ -80,6 +86,8 @@ public class ModBlockLootTables extends BlockLoot {
 
     @Override
     protected Iterable<Block> getKnownBlocks() {
-        return ModBlocks.BLOCKS.getEntries().stream().map(RegistryObject::get)::iterator;
+        List<Block> list = ModBlocks.BLOCKS.getEntries().stream().map(RegistryObject::get).collect(Collectors.toList());
+        list.add(Blocks.GRASS);
+        return list;
     }
 }

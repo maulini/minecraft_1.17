@@ -1,7 +1,14 @@
 package net.dofmine.minedofmod.network;
 
-import net.dofmine.minedofmod.job.HydrationEntityPlayer;
+import net.dofmine.minedofmod.job.client.ExtendedHunterJobsEntityPlayer;
+import net.dofmine.minedofmod.job.client.HydrationEntityPlayer;
+import net.dofmine.minedofmod.job.server.ExtendedFarmerJobsEntityPlayerServer;
+import net.dofmine.minedofmod.job.server.HydrationEntityPlayerServer;
+import net.dofmine.minedofmod.utils.JobsUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -24,14 +31,28 @@ public class PacketHydration {
 
     public static boolean handle(PacketHydration packetHydration, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            HydrationEntityPlayer props = HydrationEntityPlayer
-                    .get();
-            packetHydration.max = props.maxHydration;
-            packetHydration.hydration = props.actualHydration;
-            packetHydration.exhaustionLevel = props.exhaustionLevel;
-            packetHydration.tickTimer = props.tickTimer;
+            if (ctx.get().getSender() != null) {
+                HydrationEntityPlayerServer props = (HydrationEntityPlayerServer) JobsUtil.getAllCapabilities(ctx.get().getSender()).stream().filter(iCapabilityProvider -> iCapabilityProvider instanceof HydrationEntityPlayerServer).findFirst().get();
+                packetHydration.max = props.maxHydration;
+                packetHydration.hydration = props.actualHydration;
+                packetHydration.exhaustionLevel = props.exhaustionLevel;
+                packetHydration.tickTimer = props.tickTimer;
+            } else {
+                getLocalPlayer(packetHydration);
+            }
         });
+        ctx.get().setPacketHandled(true);
         return true;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    private static void getLocalPlayer(PacketHydration packetHydration) {
+        HydrationEntityPlayer props = HydrationEntityPlayer
+                .get(Minecraft.getInstance().player);
+        packetHydration.max = props.maxHydration;
+        packetHydration.hydration = props.actualHydration;
+        packetHydration.exhaustionLevel = props.exhaustionLevel;
+        packetHydration.tickTimer = props.tickTimer;
     }
 
     public static void encode(PacketHydration packetHydration, FriendlyByteBuf friendlyByteBuf) {

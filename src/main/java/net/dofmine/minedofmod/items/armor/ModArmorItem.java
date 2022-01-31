@@ -2,7 +2,7 @@ package net.dofmine.minedofmod.items.armor;
 
 import com.google.common.collect.ImmutableMap;
 import net.dofmine.minedofmod.items.ModArmorMaterial;
-import net.dofmine.minedofmod.job.ExtendedHunterJobsEntityPlayer;
+import net.dofmine.minedofmod.job.client.ExtendedHunterJobsEntityPlayer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TextComponent;
@@ -151,14 +151,16 @@ public class ModArmorItem extends ArmorItem {
 
     @Override
     public boolean canEquip(ItemStack stack, EquipmentSlot armorType, Entity entity) {
-        ExtendedHunterJobsEntityPlayer hunter = ExtendedHunterJobsEntityPlayer.get();
-        if (MATERIAL_TO_LEVEL_EQUIP.containsKey(((ModArmorItem)stack.getItem()).material)) {
-            Integer level = MATERIAL_TO_LEVEL_EQUIP.get(((ModArmorItem) stack.getItem()).material);
-            boolean canEquip = level <= hunter.level;
-            if (!canEquip) {
-                Minecraft.getInstance().player.sendMessage(new TextComponent(String.format("You can't equip this armor %s because your hunter level must be %d and actually is %d", stack.getItem().getRegistryName(), level, hunter.level)), UUID.randomUUID());
+        if (entity instanceof Player player) {
+            ExtendedHunterJobsEntityPlayer hunter = ExtendedHunterJobsEntityPlayer.get(player);
+            if (MATERIAL_TO_LEVEL_EQUIP.containsKey(((ModArmorItem)stack.getItem()).material)) {
+                Integer level = MATERIAL_TO_LEVEL_EQUIP.get(((ModArmorItem) stack.getItem()).material);
+                boolean canEquip = level <= hunter.level;
+                if (!canEquip) {
+                    Minecraft.getInstance().player.sendMessage(new TextComponent(String.format("You can't equip this armor %s because your hunter level must be %d and actually is %d", stack.getItem().getRegistryName(), level, hunter.level)), UUID.randomUUID());
+                }
+                return canEquip;
             }
-            return canEquip;
         }
         return super.canEquip(stack, armorType, entity);
     }

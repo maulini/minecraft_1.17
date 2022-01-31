@@ -2,27 +2,17 @@ package net.dofmine.minedofmod.container;
 
 
 import net.dofmine.minedofmod.inventory.BackPackInventory;
-import net.dofmine.minedofmod.items.ModItems;
 import net.dofmine.minedofmod.items.backpack.BackPackItem;
-import net.dofmine.minedofmod.job.ExtendedFarmerJobsEntityPlayer;
-import net.dofmine.minedofmod.job.ExtendedHunterJobsEntityPlayer;
+import net.dofmine.minedofmod.job.client.ExtendedHunterJobsEntityPlayer;
 import net.dofmine.minedofmod.slot.BackPackSlot;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.Container;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.entity.ChestBlockEntity;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
-
-import java.util.List;
 
 public class BackPackContainer extends AbstractContainerMenu {
     private final Player player;
@@ -35,7 +25,7 @@ public class BackPackContainer extends AbstractContainerMenu {
         this.playerInventory = new InvWrapper(player.getInventory());
         this.backPackInventory = backPackInventory;
         layoutPlayerInventorySlots(7, 86);
-        ExtendedHunterJobsEntityPlayer hunter = ExtendedHunterJobsEntityPlayer.get();
+        ExtendedHunterJobsEntityPlayer hunter = ExtendedHunterJobsEntityPlayer.get(player);
         addSlotByLevel(hunter.level, backPackInventory);
     }
 

@@ -1,29 +1,19 @@
 package net.dofmine.minedofmod.items.key;
 
-import com.google.common.collect.ImmutableMap;
-import com.ibm.icu.impl.locale.XCldrStub;
 import net.dofmine.minedofmod.items.ModItems;
-import net.dofmine.minedofmod.job.ExtendedEntityPlayer;
 import net.dofmine.minedofmod.tabs.ModCreativeTabs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class KeyItem extends Item implements ICurioItem {

@@ -1,12 +1,10 @@
-package net.dofmine.minedofmod.job;
+package net.dofmine.minedofmod.job.client;
 
 import com.google.common.collect.ImmutableMap;
 import net.dofmine.minedofmod.MinedofMod;
+import net.dofmine.minedofmod.job.server.ExtendedMinerJobsEntityPlayerServer;
 import net.dofmine.minedofmod.network.Networking;
-import net.dofmine.minedofmod.network.PacketHunterJobs;
 import net.dofmine.minedofmod.network.PacketMinerJobs;
-import net.dofmine.minedofmod.setup.ClientSetup;
-import net.dofmine.minedofmod.setup.EventHandler;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
@@ -14,8 +12,11 @@ import net.minecraft.nbt.LongTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -26,9 +27,9 @@ import java.util.Map;
 
 public class ExtendedMinerJobsEntityPlayer implements ICapabilitySerializable {
 
-    public final static ResourceLocation EXT_PROP_NAME = new ResourceLocation(MinedofMod.MODS_ID, "extpropplayerminerjobs");
+    public final static ResourceLocation EXT_PROP_NAME = new ResourceLocation(MinedofMod.MODS_ID, "extpropplayerminerjobs_client");
 
-    private Map<Integer, Long> xpByLvl = new ImmutableMap.Builder() //
+    private Map<Integer, Long> xpByLvl = new ImmutableMap.Builder<Integer, Long>() //
             .put(1, 100L) //
             .put(2, 250L) //
             .put(3, 500L) //
@@ -52,33 +53,43 @@ public class ExtendedMinerJobsEntityPlayer implements ICapabilitySerializable {
             .build();
 
     private final Player player;
-    protected static AttachCapabilitiesEvent attachCapabilitiesEvent;
     public long xp;
     public long maxXp;
     public int level;
     public int maxLevel;
+    private static LazyOptional<ExtendedMinerJobsEntityPlayer> lazyOptional;
+    public static Capability<ExtendedMinerJobsEntityPlayer> MINER_JOBS = CapabilityManager.get(new CapabilityToken<>() {
+        @Override
+        public String toString() {
+            return EXT_PROP_NAME.toString();
+        }
+    });
 
-    public ExtendedMinerJobsEntityPlayer(Player player, AttachCapabilitiesEvent attachCapabilitiesEvent) {
+    public ExtendedMinerJobsEntityPlayer(Player player, AttachCapabilitiesEvent<Entity> attachCapabilitiesEvent) {
         this.xp = 0;
         this.level = 1;
         this.maxLevel = 20;
         this.maxXp = 100;
         this.player = player;
-        this.attachCapabilitiesEvent = attachCapabilitiesEvent;
         attachCapabilitiesEvent.addCapability(EXT_PROP_NAME, this);
+        attachCapabilitiesEvent.addListener(() -> lazyOptional.invalidate());
     }
 
-    public static final void register(Player player, AttachCapabilitiesEvent attachCapabilitiesEvent) {
-        new ExtendedMinerJobsEntityPlayer(player, attachCapabilitiesEvent);
+    public static final void register(Player player, AttachCapabilitiesEvent<Entity> attachCapabilitiesEvent) {
+        ExtendedMinerJobsEntityPlayer miner = new ExtendedMinerJobsEntityPlayer(player, attachCapabilitiesEvent);
+        lazyOptional = LazyOptional.of(() -> miner);
     }
 
-    public static final ExtendedMinerJobsEntityPlayer get() {
-        return attachCapabilitiesEvent == null ? null : (ExtendedMinerJobsEntityPlayer) attachCapabilitiesEvent.getCapabilities().get(EXT_PROP_NAME);
+    public static final ExtendedMinerJobsEntityPlayer get(Player player) {
+        return player.getCapability(MINER_JOBS).orElse(null);
     }
 
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        if (cap == MINER_JOBS) {
+            return lazyOptional.cast();
+        }
         return LazyOptional.empty();
     }
 
@@ -89,7 +100,6 @@ public class ExtendedMinerJobsEntityPlayer implements ICapabilitySerializable {
         properties.put("xp", LongTag.valueOf(this.xp));
         properties.put("level", IntTag.valueOf(this.level));
         properties.put("maxXp", LongTag.valueOf(this.maxXp));
-        EventHandler.storeEntityData(player.getDisplayName().getString(), properties);
         return properties;
     }
 
@@ -118,10 +128,6 @@ public class ExtendedMinerJobsEntityPlayer implements ICapabilitySerializable {
     public void sync() {
         PacketMinerJobs packetJobs = new PacketMinerJobs(this.xp, this.level, this.maxXp);
         Networking.sendToServer(packetJobs);
-
-        if (!player.level.isClientSide) {
-            Networking.sendToClient(packetJobs, (ServerPlayer) player);
-        }
     }
 
     public long getXp() {

@@ -1,9 +1,9 @@
-package net.dofmine.minedofmod.job;
+package net.dofmine.minedofmod.job.client;
 
 import net.dofmine.minedofmod.MinedofMod;
+import net.dofmine.minedofmod.job.server.HydrationEntityPlayerServer;
 import net.dofmine.minedofmod.network.Networking;
 import net.dofmine.minedofmod.network.PacketHydration;
-import net.dofmine.minedofmod.setup.EventHandler;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.FloatTag;
@@ -13,10 +13,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.food.FoodData;
 import net.minecraft.world.level.GameRules;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -26,28 +28,36 @@ import javax.annotation.Nullable;
 
 public class HydrationEntityPlayer implements ICapabilitySerializable {
 
-    public final static ResourceLocation EXT_PROP_NAME = new ResourceLocation(MinedofMod.MODS_ID, "hydration_player");
+    public final static ResourceLocation EXT_PROP_NAME = new ResourceLocation(MinedofMod.MODS_ID, "hydration_player_client");
 
     private final Player player;
-    private static AttachCapabilitiesEvent<Player> attachCapabilitiesEvent;
 
     public int actualHydration;
     public int maxHydration;
-    private int lastHydrationLevel = 20;
     public float exhaustionLevel;
     public int tickTimer;
+    private static LazyOptional<HydrationEntityPlayer> lazyOptional;
+    public static Capability<HydrationEntityPlayer> HYDRATION = CapabilityManager.get(new CapabilityToken<>() {
+        @Override
+        public String toString() {
+            return EXT_PROP_NAME.toString();
+        }
+    });
 
-    public HydrationEntityPlayer(Player player, AttachCapabilitiesEvent attachCapabilitiesEvent) {
+    public HydrationEntityPlayer(Player player, AttachCapabilitiesEvent<Entity> attachCapabilitiesEvent) {
         this.player = player;
         this.actualHydration = 20;
         this.maxHydration = 20;
-        this.attachCapabilitiesEvent = attachCapabilitiesEvent;
         attachCapabilitiesEvent.addCapability(EXT_PROP_NAME, this);
+        attachCapabilitiesEvent.addListener(() -> lazyOptional.invalidate());
     }
 
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        if (cap == HYDRATION) {
+            return lazyOptional.cast();
+        }
         return LazyOptional.empty();
     }
 
@@ -59,7 +69,6 @@ public class HydrationEntityPlayer implements ICapabilitySerializable {
         properties.put("MaxHydration", IntTag.valueOf(this.maxHydration));
         properties.put("ExhaustionLevel", FloatTag.valueOf(this.maxHydration));
         properties.put("TickTimer", IntTag.valueOf(this.tickTimer));
-        EventHandler.storeEntityData(player.getDisplayName().getString(), properties);
         return properties;
     }
 
@@ -79,29 +88,21 @@ public class HydrationEntityPlayer implements ICapabilitySerializable {
     }
 
     public static final void register(Player player, AttachCapabilitiesEvent attachCapabilitiesEvent) {
-        new HydrationEntityPlayer(player, attachCapabilitiesEvent);
+        HydrationEntityPlayer hydrationEntityPlayer = new HydrationEntityPlayer(player, attachCapabilitiesEvent);
+        lazyOptional = LazyOptional.of(() -> hydrationEntityPlayer);
     }
 
-    public static final HydrationEntityPlayer get() {
-        return attachCapabilitiesEvent == null ? null : (HydrationEntityPlayer) attachCapabilitiesEvent.getCapabilities().get(EXT_PROP_NAME);
-    }
-
-    private static String getSaveKey(Player player) {
-        return player.getDisplayName() + ":" + EXT_PROP_NAME;
+    public static final HydrationEntityPlayer get(Player player) {
+        return player.getCapability(HYDRATION).orElse(null);
     }
 
     public void sync() {
         PacketHydration packetHydration = new PacketHydration(this.maxHydration, this.actualHydration, this.exhaustionLevel, tickTimer);
         Networking.sendToServer(packetHydration);
-
-        if (!player.level.isClientSide) {
-            Networking.sendToClient(packetHydration, (ServerPlayer) player);
-        }
     }
 
     public void tick(Player player) {
         Difficulty difficulty = player.level.getDifficulty();
-        this.lastHydrationLevel = this.actualHydration;
         if (this.exhaustionLevel >= 4.0F) {
             this.exhaustionLevel -= 4.0F;
             if (difficulty != Difficulty.PEACEFUL) {
